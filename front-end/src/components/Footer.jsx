@@ -25,7 +25,7 @@ const [basicInfo, setBasicInfo] = useState({});
     <div className="bg-gray-800 mt-10 md:mt-16 flex  justify-around py-5">
       <div>
         <p className="font-sans text-white">
-        <span className="">&#169;</span> 2024 {" "}
+        <span className="">&#169;</span> 2026 {" "}
 <span className="text-yellow-300" id="footerBrand">{basicInfo.brandName}</span>{" "}
 
 
