@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
-import { FaPlus } from "react-icons/fa";
+import AdminLayout from "../components/AdminLayout";
+import { FiPlus, FiTrash2, FiEdit2, FiExternalLink } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 export default function Certificate() {
@@ -80,7 +80,7 @@ export default function Certificate() {
       const data = await res.json();
       if (data.success === false) {
         console.log(data.message);
-        
+
       } else {
         setLoading(false)
         window.location.reload();
@@ -88,169 +88,181 @@ export default function Certificate() {
     } catch (error) {
       setError(error.message);
       setLoading(false);
-     
+
     }
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
+    <AdminLayout
+      title="Certificate"
+      subtitle="Showcase your credentials and certifications."
+    >
+      <div>
+        {!showForm && (
+          <button
+            type="button"
+            onClick={toggleForm}
+            className="flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-brand-300 bg-brand-50/40 p-5 text-brand-600 transition hover:border-brand-500 hover:bg-brand-50 dark:border-brand-500/40 dark:bg-brand-500/5 dark:text-brand-300 dark:hover:bg-brand-500/10"
+          >
+            <FiPlus className="text-xl" />
+            <span className="font-semibold">Add New Certificate</span>
+          </button>
+        )}
       </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold ">
-          Certificate
-        </h1>
-        <div className="mt-5">
-          {!showForm && (
-            <div
-              onClick={toggleForm}
-              className="max-w-72 flex flex-row gap-5 border-dashed border-2 border-indigo-600 p-2  justify-center mx-auto hover:border-green-600 cursor-pointer "
-            >
-              <FaPlus className="text-2xl text-blue-600 " />
-              <h3>Add New Certificate</h3>
-            </div>
-          )}
-        </div>
-        {showForm && (
-          <div className="mt-5">
-            <form className="mt-5" onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="name">
-                  Name<span className="text-red-600 text-2xl">*</span>
+
+      {showForm && (
+        <div className="card p-5 md:p-6">
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label htmlFor="name" className="form-label">
+                  Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. AWS Cloud Practitioner Essentials"
                   id="name"
-                  className="p-1"
+                  className="form-input"
                   required
                   value={formData.name}
                   onChange={handleChange}
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="issuingOrganization">
-                  Issuing organization{" "}
-                  <span className="text-red-600 text-2xl">*</span>
+              <div className="md:col-span-2">
+                <label htmlFor="issuingOrganization" className="form-label">
+                  Issuing organization <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. Amazon Web Services (AWS)"
                   id="issuingOrganization"
-                  className="p-1"
+                  className="form-input"
                   required
                   value={formData.issuingOrganization}
                   onChange={handleChange}
                 />
               </div>
-              <div className="flex flex-row gap-5">
-                <div className="flex flex-col gap-2 mt-5">
-                  <label htmlFor="issueDate">
-                    Issue Date<span className="text-red-600 text-2xl">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    id="issueDate"
-                    className="p-1"
-                    required
-                    onChange={handleChange}
-                    value={formData.issueDate}
-                  />
-                </div>
+              <div>
+                <label htmlFor="issueDate" className="form-label">
+                  Issue Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  id="issueDate"
+                  className="form-input"
+                  required
+                  onChange={handleChange}
+                  value={formData.issueDate}
+                />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="credentialId">Credential ID</label>
+              <div>
+                <label htmlFor="credentialId" className="form-label">
+                  Credential ID
+                </label>
                 <input
                   type="text"
                   id="credentialId"
-                  className="p-1"
+                  className="form-input"
                   onChange={handleChange}
                   value={formData.credentialId}
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="credentialUrl">Credential URL</label>
+              <div className="md:col-span-2">
+                <label htmlFor="credentialUrl" className="form-label">
+                  Credential URL
+                </label>
                 <textarea
                   rows={2}
                   type="text"
                   id="credentialUrl"
-                  className="p-1"
+                  className="form-input"
                   onChange={handleChange}
                   value={formData.credentialUrl}
                 />
               </div>
-              <div className="flex flex-row gap-2 justify-end">
-                <div>
-                  <button
-                    onClick={toggleForm}
-                    className="mt-5 p-3 bg-white border-black w-full text-black rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-                  >
-                    Back
-                  </button>
-                </div>
-                <div>
-                  <button
-                    disabled={loading}
-                    className="mt-5 p-3 px-16 bg-green-700 w-full text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-                  >
-                    {loading ? "Adding..." : "Add"}
-                  </button>
-                </div>
-              </div>
-              {error && <p className="text-red-700">{error}</p>}
-            </form>
-          </div>
-        )}
-        {!showForm && certificates && certificates.length > 0 && (
-          <div className="mt-5">
-            <h2 className="font-semibold text-xl md:ml-10">
-              Recent Add Certificates
-            </h2>
+            </div>
+
+            {error && (
+              <p className="mt-4 text-sm font-medium text-red-600">{error}</p>
+            )}
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={toggleForm}
+                className="btn-secondary"
+              >
+                Back
+              </button>
+              <button disabled={loading} className="btn-primary">
+                {loading ? "Adding..." : "Add"}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {!showForm && certificates && certificates.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+            Recent Add Certificates
+          </h2>
+          <div className="mt-4 grid gap-4">
             {certificates.map((certificate) => (
               <div
                 key={certificate._id}
-                className="mt-5 border rounded-lg p-3 flex justify-between items-center gap-4"
+                className="card p-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
               >
-                <div>
-                  <p className="text-2xl font-bold">{certificate.name}</p>
-                  <p className="font-semibold">
+                <div className="min-w-0 break-words">
+                  <p className="font-display text-xl font-bold text-slate-900 dark:text-white">
+                    {certificate.name}
+                  </p>
+                  <p className="mt-0.5 font-semibold text-slate-600 dark:text-slate-300">
                     {certificate.issuingOrganization}
                   </p>
                   {certificate.credentialId && (
-                    <p>Credential ID {" "}
-                       <span className="text-red-400">{certificate.credentialId}</span>
+                    <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                      Credential ID{" "}
+                      <span className="break-all font-mono text-slate-700 dark:text-slate-300">
+                        {certificate.credentialId}
+                      </span>
                     </p>
                   )}
 
-                  <p>
+                  <p className="mt-1 font-mono text-xs text-slate-500 dark:text-slate-400">
                     {new Date(certificate.issueDate).toLocaleDateString(
                       "en-US",
                       { year: "numeric", month: "long" }
                     )}{" "}
                   </p>
                   {certificate.credentialUrl && (
-                    <Link to={certificate.credentialUrl} >
-                      <p className="text-blue-400 underline">View Certificate</p>
-                      </Link>
+                    <Link to={certificate.credentialUrl}>
+                      <p className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:underline dark:text-brand-400">
+                        <FiExternalLink /> View Certificate
+                      </p>
+                    </Link>
                   )}
                 </div>
 
-                <div className="flex flex-col items-center">
-                  <button 
-                  onClick={() => handleDeleteCertificate(certificate._id)}
-                  className="text-red-700 uppercase">delete</button>
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => handleDeleteCertificate(certificate._id)}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-500/20"
+                  >
+                    <FiTrash2 /> Delete
+                  </button>
 
                   <Link to={`/edit-certificate/${certificate._id}`}>
-                    <button className="text-green-700 uppercase">edit</button>
+                    <button className="inline-flex items-center gap-1.5 rounded-full bg-brand-500/10 px-4 py-2 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/20 dark:text-brand-400">
+                      <FiEdit2 /> Edit
+                    </button>
                   </Link>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import AdminLayout from "../components/AdminLayout";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function Certificate() {
@@ -28,7 +28,7 @@ export default function Certificate() {
     });
   };
 
-  
+
 
   useEffect(() => {
     const fetchCertificate = async () => {
@@ -42,7 +42,7 @@ export default function Certificate() {
       const formattedData = {
         ...data,
         issueDate: new Date(data.issueDate).toISOString().substring(0, 10),
-        
+
       };
 
       setFormData(formattedData);
@@ -70,7 +70,7 @@ const handleSubmit = async (e) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-    
+
       })
 
       const data = await res.json();
@@ -87,104 +87,100 @@ const handleSubmit = async (e) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
-      </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold ">
-          Edit Certificate
-        </h1>
-
-        <div className="mt-5">
-          <form className="mt-5" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="name">
-                Name<span className="text-red-600 text-2xl">*</span>
+    <AdminLayout
+      title="Edit Certificate"
+      subtitle="Update the details of this certification."
+    >
+      <div className="card p-5 md:p-6">
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label htmlFor="name" className="form-label">
+                Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. AWS Cloud Practitioner Essentials"
                 id="name"
-                className="p-1"
+                className="form-input"
                 required
                 value={formData.name}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="issuingOrganization">
-                Issuing organization{" "}
-                <span className="text-red-600 text-2xl">*</span>
+            <div className="md:col-span-2">
+              <label htmlFor="issuingOrganization" className="form-label">
+                Issuing organization <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. Amazon Web Services (AWS)"
                 id="issuingOrganization"
-                className="p-1"
+                className="form-input"
                 required
                 value={formData.issuingOrganization}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-row gap-5">
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="issueDate">
-                  Issue Date<span className="text-red-600 text-2xl">*</span>
-                </label>
-                <input
-                  type="date"
-                  id="issueDate"
-                  className="p-1"
-                  required
-                  onChange={handleChange}
-                  value={formData.issueDate}
-                />
-              </div>
+            <div>
+              <label htmlFor="issueDate" className="form-label">
+                Issue Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                id="issueDate"
+                className="form-input"
+                required
+                onChange={handleChange}
+                value={formData.issueDate}
+              />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="credentialId">Credential ID</label>
+            <div>
+              <label htmlFor="credentialId" className="form-label">
+                Credential ID
+              </label>
               <input
                 type="text"
                 id="credentialId"
-                className="p-1"
+                className="form-input"
                 onChange={handleChange}
                 value={formData.credentialId}
               />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="credentialUrl">Credential URL</label>
+            <div className="md:col-span-2">
+              <label htmlFor="credentialUrl" className="form-label">
+                Credential URL
+              </label>
               <textarea
                 rows={2}
                 type="text"
                 id="credentialUrl"
-                className="p-1"
+                className="form-input"
                 onChange={handleChange}
                 value={formData.credentialUrl}
               />
             </div>
-            <div className="flex flex-row gap-2 justify-end">
-              <div>
-                <Link to="/certificate">
-                  <button className="mt-5 p-3 bg-white border-black w-full text-black rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-                    Back
-                  </button>
-                </Link>
-              </div>
-              <div>
-                <button
-                  disabled={loading || !isFormChanged}
-                  className="mt-5 p-3 px-16 bg-green-700 w-full text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-                >
-                  {loading ? "Editing..." : "Edit"}
-                </button>
-              </div>
-            </div>
-            {error && <p className="text-red-700">{error}</p>}
-          </form>
-        </div>
+          </div>
+
+          {error && (
+            <p className="mt-4 text-sm font-medium text-red-600">{error}</p>
+          )}
+
+          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <Link to="/certificate">
+              <button type="button" className="btn-secondary w-full">
+                Back
+              </button>
+            </Link>
+            <button
+              disabled={loading || !isFormChanged}
+              className="btn-primary"
+            >
+              {loading ? "Editing..." : "Edit"}
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

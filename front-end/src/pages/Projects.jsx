@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
-import { FaPlus } from "react-icons/fa";
+import AdminLayout from "../components/AdminLayout";
+import { FiPlus, FiEdit2, FiTrash2, FiGithub, FiExternalLink } from "react-icons/fi";
 
 import { Link } from "react-router-dom";
 
@@ -94,130 +94,147 @@ export default function Projects() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
-      </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold ">
-          Projects
-        </h1>
-        <div className="mt-5  ">
-          {!showForm && (
-            <div
-              className="max-w-72 flex flex-row gap-5 border-dashed border-2 border-indigo-600 p-2  justify-center mx-auto hover:border-green-600 "
-              onClick={toggleForm}
-            >
-              <FaPlus className="text-2xl text-blue-600 " />
-              <h3>Add New Project</h3>
-            </div>
-          )}
-        </div>
-        {showForm && (
-          <div className="mt-5">
-            <form className="mt-5" onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="projectName">
-                  Project Name<span className="text-red-600 text-2xl">*</span>
+    <AdminLayout
+      title="Projects"
+      subtitle="Showcase the work that defines your portfolio."
+    >
+      {!showForm && (
+        <button
+          onClick={toggleForm}
+          className="group flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-300 px-6 py-8 text-slate-500 transition hover:border-brand-400 hover:text-brand-600 dark:border-white/10 dark:text-slate-400 dark:hover:border-brand-400 dark:hover:text-brand-300"
+        >
+          <FiPlus className="text-2xl transition group-hover:scale-110" />
+          <span className="font-display text-lg font-semibold">
+            Add New Project
+          </span>
+        </button>
+      )}
+
+      {showForm && (
+        <div className="card p-6 md:p-8">
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label htmlFor="projectName" className="form-label">
+                  Project Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. Portfolio"
                   id="projectName"
-                  className="p-1"
+                  className="form-input"
                   required
                   onChange={handleChange}
                   value={formData.projectName}
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="projectDescription">Description</label>
+              <div className="md:col-span-2">
+                <label htmlFor="projectDescription" className="form-label">
+                  Description
+                </label>
                 <textarea
                   rows={4}
                   type="text"
                   placeholder="e.g. Portfolio"
                   id="projectDescription"
-                  className="p-1"
+                  className="form-input"
                   onChange={handleChange}
                   value={formData.projectDescription}
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="repoUrl">GitHub repo link</label>
+              <div>
+                <label htmlFor="repoUrl" className="form-label">
+                  GitHub repo link
+                </label>
                 <textarea
                   rows={2}
                   type="text"
                   id="repoUrl"
-                  className="p-1"
+                  className="form-input"
                   value={formData.repoUrl}
                   onChange={handleChange}
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="siteUrl">App / Site Link</label>
+              <div>
+                <label htmlFor="siteUrl" className="form-label">
+                  App / Site Link
+                </label>
                 <textarea
                   rows={2}
                   type="text"
                   id="siteUrl"
-                  className="p-1"
+                  className="form-input"
                   value={formData.siteUrl}
                   onChange={handleChange}
                 />
               </div>
-              <div className="flex flex-row gap-2 justify-end">
-                <div>
-                  <button
-                    onClick={toggleForm}
-                    className="mt-5 p-3 bg-white border-black w-full text-black rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-                  >
-                    Back
-                  </button>
-                </div>
+            </div>
+            <div className="mt-6 flex flex-row justify-end gap-3">
+              <button
+                type="button"
+                onClick={toggleForm}
+                className="btn-secondary"
+              >
+                Back
+              </button>
+              <button disabled={loading} className="btn-primary">
+                {loading ? "Creating..." : "Add Project"}
+              </button>
+            </div>
+            {error && <p className="mt-4 text-sm font-medium text-red-600">{error}</p>}
+          </form>
+        </div>
+      )}
 
-                <div>
-                  <button
-                    disabled={loading}
-                    className="mt-5 p-3 bg-green-700 w-full text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-                  >
-                    {loading ? "Creating..." : "Add Project"}
-                  </button>
-                </div>
-              </div>
-              {error && <p className="text-red-700">{error}</p>}
-            </form>
-          </div>
-        )}
-        {!showForm && projects && projects.length > 0 && (
-          <div className="mt-5">
-            <h2 className="font-semibold text-xl md:ml-10">Recent Projects</h2>
+      {!showForm && projects && projects.length > 0 && (
+        <div className="mt-10">
+          <h2 className="font-display text-xl font-bold text-slate-900 dark:text-white">
+            Recent Projects
+          </h2>
+          <div className="mt-5 grid gap-4">
             {projects.map((project) => (
               <div
                 key={project._id}
-                className="mt-5 border rounded-lg p-3 flex justify-between items-center gap-4"
+                className="card card-hover flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between"
               >
-             
-                <p>{project.projectName}</p>
+                <div className="min-w-0 break-words">
+                  <p className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                    {project.projectName}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {project.repoUrl && (
+                      <span className="chip gap-1.5">
+                        <FiGithub className="text-xs" /> Repo
+                      </span>
+                    )}
+                    {project.siteUrl && (
+                      <span className="chip gap-1.5">
+                        <FiExternalLink className="text-xs" /> Live
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-                <div className="flex flex-col items-center">
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                  <Link to={`/edit-project/${project._id}`}>
+                    <button className="inline-flex items-center gap-1.5 rounded-full bg-brand-500/10 px-4 py-2 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/20 dark:text-brand-300">
+                      <FiEdit2 className="text-xs" /> Edit
+                    </button>
+                  </Link>
                   <button
                     onClick={() => {
                       handleDeleteProject(project._id);
                     }}
-                    className="text-red-700 uppercase"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-500/20"
                   >
-                    delete
+                    <FiTrash2 className="text-xs" /> Delete
                   </button>
-
-                  <Link to={`/edit-project/${project._id}`}>
-                    <button className="text-green-700 uppercase">edit</button>
-                  </Link>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 }

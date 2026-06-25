@@ -1,50 +1,41 @@
-import React,{useEffect,useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { CiSettings } from "react-icons/ci";
 
 export default function Footer() {
   const { currentUser } = useSelector((state) => state.user);
-const [basicInfo, setBasicInfo] = useState({});
+  const [basicInfo, setBasicInfo] = useState({});
 
   useEffect(() => {
-    const fetchExperiences = async () => {
+    const fetchBasicInfo = async () => {
       try {
         const res = await fetch("/api/basicInfo/get-basicInfo");
         const data = await res.json();
         setBasicInfo(data);
-        // console.log(data);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchExperiences();
+    fetchBasicInfo();
   }, []);
 
   return (
-    <div className="bg-gray-800 mt-10 md:mt-16 flex  justify-around py-5">
-      <div>
-        <p className="font-sans text-white">
-        <span className="">&#169;</span> 2026 {" "}
-<span className="text-yellow-300" id="footerBrand">{basicInfo.brandName}</span>{" "}
-
-
+    <footer className="border-t border-slate-200 dark:border-white/10">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-8 sm:flex-row">
+        <p className="font-mono text-sm text-slate-500 dark:text-slate-400">
+          © 2026{" "}
+          <span className="text-brand-600 dark:text-brand-300" id="footerBrand">
+            {basicInfo.brandName}
+          </span>
+          .
         </p>
-      </div>
-      <div>
-      <p className="font-sans">
-        
-        {currentUser ?(
-          <Link to="/edit" className="hover:underline text-white font-semibold">
-         Edit page
+        <Link
+          to={currentUser ? "/edit" : "/sign-in"}
+          className="font-mono text-sm text-slate-500 transition hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-300"
+        >
+          {currentUser ? "Dashboard" : "Edit page"}
         </Link>
-        ) : (<Link to="/sign-in" className="hover:underline text-white font-semibold">
-      Edit page
-      </Link>)}
-     
-      </p>
       </div>
-     
-    </div>
+    </footer>
   );
 }

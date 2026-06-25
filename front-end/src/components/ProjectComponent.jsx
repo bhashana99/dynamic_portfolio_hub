@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import DotLoader from "react-spinners/DotLoader";
+import { FiGithub, FiExternalLink } from "react-icons/fi";
+import { HiOutlineFolder } from "react-icons/hi";
+import Section from "./Section";
+import Reveal from "./Reveal";
 
 export default function ProjectComponent() {
   const [projects, setProjects] = useState([]);
@@ -10,71 +13,74 @@ export default function ProjectComponent() {
         const res = await fetch("/api/project/get-projects");
         const data = await res.json();
         setProjects(data);
-
-        // console.log(data);
       } catch (error) {
         console.log(error);
       }
     };
     fetchProjects();
   }, []);
+
+  if (projects.length === 0) return null;
+
   return (
-    <>
-      {projects.length > 0 && (
-        <div className="flex justify-center items-center min-h-screen" id="projectCom">
-          <div className="w-full max-w-5xl mt-5 mx-5">
-            <h1 className="text-2xl md:text-5xl font-bold font-mono text-center underline">
-              Projects
-            </h1>
-            <div className=" items-center mt-5 md:mt-16 ">
-              <div className="flex flex-row items-center h-full w-full text-center">
-                <div className="grid md:grid-cols-3  gap-2  ">
-                  {projects.map((project) => (
-                    <div
-                      key={project._id}
-                      className="max-w-sm bg-blue-50 rounded overflow-hidden shadow-lg border border-blue-800 
-             flex flex-col h-full"
+    <Section id="projectCom" index="03" label="projects" title="Things I've built">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project, i) => (
+          <Reveal key={project._id} delay={i * 0.06}>
+            <div className="card card-hover group flex h-full flex-col p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300">
+                  <HiOutlineFolder className="text-xl" />
+                </span>
+                <div className="flex items-center gap-3 text-slate-400">
+                  {project.repoUrl && (
+                    <a
+                      href={project.repoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="GitHub repository"
+                      className="transition hover:text-brand-600 dark:hover:text-brand-300"
                     >
-                      
-                      <div className="px-6 py-4 font-sans flex-grow">
-                        <div className="font-bold text-xl mb-2">
-                          {project.projectName}
-                        </div>
-
-                        <p className="text-black text-sm text-justify">
-                          {project.projectDescription}
-                        </p>
-                      </div>
-
-                      
-                      <div className="flex justify-center gap-3 mb-4 mt-auto">
-                        {project.repoUrl && (
-                          <a
-                            href={project.repoUrl}
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                          >
-                            Github Repo
-                          </a>
-                        )}
-
-                        {project.siteUrl && (
-                          <a
-                            href={project.siteUrl}
-                            className="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded"
-                          >
-                            Demo
-                          </a>
-                        )}
-                      </div>
-                    </div>
-
-                  ))}
+                      <FiGithub className="text-lg" />
+                    </a>
+                  )}
+                  {project.siteUrl && (
+                    <a
+                      href={project.siteUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label="Live demo"
+                      className="transition hover:text-brand-600 dark:hover:text-brand-300"
+                    >
+                      <FiExternalLink className="text-lg" />
+                    </a>
+                  )}
                 </div>
               </div>
+
+              <h3 className="font-display text-lg font-bold text-slate-900 transition group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-300 break-words">
+                {project.projectName}
+              </h3>
+              <p className="mt-2 flex-grow break-words text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                {project.projectDescription}
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                {project.repoUrl && (
+                  <a href={project.repoUrl} target="_blank" rel="noreferrer" className="btn-secondary px-4 py-2 text-xs">
+                    <FiGithub /> Code
+                  </a>
+                )}
+                {project.siteUrl && (
+                  <a href={project.siteUrl} target="_blank" rel="noreferrer" className="btn-primary px-4 py-2 text-xs">
+                    <FiExternalLink /> Live demo
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
-    </>
+          </Reveal>
+        ))}
+      </div>
+    </Section>
   );
 }

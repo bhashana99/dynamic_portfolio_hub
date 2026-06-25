@@ -10,14 +10,16 @@ import ContactComponent from "../components/ContactComponent";
 
 export default function Home() {
   return (
-    <div className="bg-gray-100">
+    <div className="min-h-screen">
       <Header />
-      <Welcome  />
-      <EduComponent />
-      <ExperienceComponent />
-      <ProjectComponent />
-      <CertificateComponent />
-      <ContactComponent />
+      <main>
+        <Welcome />
+        <EduComponent />
+        <ExperienceComponent />
+        <ProjectComponent />
+        <CertificateComponent />
+        <ContactComponent />
+      </main>
       <Footer />
     </div>
   );

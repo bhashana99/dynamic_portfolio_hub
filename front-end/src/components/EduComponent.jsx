@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import eduImg from "../assets/eduImg1.png";
-import DotLoader from "react-spinners/DotLoader";
-import FadeIn from "./FadeIn";
+import { FaGraduationCap } from "react-icons/fa";
+import Section from "./Section";
+import Reveal from "./Reveal";
+
+const fmt = (d) =>
+  new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short" });
+
 export default function EduComponent() {
   const [educations, setEducations] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEducations = async () => {
@@ -12,7 +15,6 @@ export default function EduComponent() {
         const res = await fetch("/api/education/get-educations");
         const data = await res.json();
         setEducations(data);
-        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -20,63 +22,43 @@ export default function EduComponent() {
     fetchEducations();
   }, []);
 
-  return (
-    <>
-    {educations.length > 0 && (
-    <div className="flex justify-center items-center min-h-screen"  id="eduCom" >
-       
-      <div className="w-full max-w-5xl mt-5 mx-5">
-        <h1 className="text-2xl md:text-5xl font-bold font-mono text-center underline">
-          Education
-        </h1>
+  if (educations.length === 0) return null;
 
-        <div className="grid md:grid-cols-2 items-center mt-5 gap-8">
-        <FadeIn delay={0.3} direction="right" padding fullWidth>
-          <div className="flex justify-center">
-            <img src={eduImg} alt="Education" className="w-full max-w-sm" />
-          </div>
-          </FadeIn>
-          <div className="flex flex-col items-center">
-            {loading ? (
-              <DotLoader color="#000000" />
-            ) : (
-              <ul className="w-full">
-                {educations.map((education) => (
-                  
-                  <li
-                    key={education._id}
-                    className="border-2 border-blue-200 bg-blue-50 mt-5 p-3 items-center gap-4 rounded-xl text-left"
-                  >
-                    <div className="font-sans">
-                      <p className="text-lg md:text-xl font-bold">{education.school}</p>
-                      <p className="font-medium">{education.degreeName}</p>
-                      {education.gpa && (
-                        <p>
-                          GPA: <span className="text-red-400">{education.gpa}</span>
-                        </p>
-                      )}
-                      <p>
-                        {new Date(education.startDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                        })}{" "}
-                        -{" "}
-                        {new Date(education.endDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                        })}
-                      </p>
-                      <p className="my-3 text-justify">{education.description}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+  return (
+    <Section id="eduCom" index="01" label="education" title="Where I studied">
+      <div className="relative ml-3 border-l border-slate-200 dark:border-white/10">
+        {educations.map((education, i) => (
+          <Reveal key={education._id} delay={i * 0.05}>
+            <div className="relative pl-8 pb-10 last:pb-0">
+              <span className="absolute -left-[9px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-brand-500 bg-white dark:bg-ink-900">
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+              </span>
+              <div className="card card-hover p-5">
+                <p className="font-mono text-xs text-accent-600 dark:text-accent-400">
+                  {fmt(education.startDate)} — {fmt(education.endDate)}
+                </p>
+                <h3 className="mt-1 flex items-center gap-2 break-words font-display text-lg font-bold text-slate-900 dark:text-white">
+                  <FaGraduationCap className="shrink-0 text-brand-500" />
+                  {education.school}
+                </h3>
+                <p className="font-medium text-slate-700 dark:text-slate-300">
+                  {education.degreeName}
+                </p>
+                {education.gpa && (
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                    GPA <span className="text-brand-600 dark:text-brand-300">{education.gpa}</span>
+                  </p>
+                )}
+                {education.description && (
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    {education.description}
+                  </p>
+                )}
+              </div>
+            </div>
+          </Reveal>
+        ))}
       </div>
-    </div>
-    )}
-    </>
+    </Section>
   );
 }

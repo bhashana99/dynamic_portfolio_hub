@@ -7,23 +7,15 @@ import { IoIosSettings } from "react-icons/io";
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const [basicInfo, setBasicInfo] = useState({});
-  const [showMenu, setShowMenu] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [isSectionEmpty, setIsSectionEmpty] = useState({
     certificate: true,
     project: true,
     education: true,
     work: true,
   });
-  const [loading, setLoading] = useState(true);
   const location = useLocation();
-
-  const handleMenu = () => {
-    setShowMenu(!showMenu);
-  };
-
-  const handleClick = () => {
-    setShowMenu(!showMenu);
-  };
 
   useEffect(() => {
     const fetchBasicInfo = async () => {
@@ -31,7 +23,6 @@ export default function Header() {
         const res = await fetch("/api/basicInfo/get-basicInfo");
         const data = await res.json();
         setBasicInfo(data);
-        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -67,146 +58,123 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
     if (location.hash) {
       const element = document.getElementById(location.hash.slice(1));
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
+      if (element) element.scrollIntoView({ behavior: "smooth" });
     }
   }, [location.hash]);
 
+  const navLinks = [
+    { label: "Home", hash: "#welcomeCom", show: true },
+    { label: "Education", hash: "#eduCom", show: !isSectionEmpty.education },
+    { label: "Experience", hash: "#exeCom", show: !isSectionEmpty.work },
+    { label: "Projects", hash: "#projectCom", show: !isSectionEmpty.project },
+    {
+      label: "Certificate",
+      hash: "#certificateCom",
+      show: !isSectionEmpty.certificate,
+    },
+    { label: "Contact", hash: "#contactCom", show: true },
+  ].filter((l) => l.show);
+
   return (
-    <header className="bg-blue-800 shadow-md w-full fixed md:py-2 py-1">
-      <div className="flex justify-between items-center max-w-6xl mx-auto p-3">
-        <Link to="/">
-          <h1 className="font-bold text-sm sm:text-xl flex flex-wrap ">
-            <span className="text-yellow-300" id="brandName-show">
-              {basicInfo.brandName}
-            </span>
-          </h1>
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "border-b border-slate-200/70 bg-white/80 backdrop-blur-lg dark:border-white/10 dark:bg-slate-950/70"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
+        <Link to="/" className="text-lg sm:text-2xl">
+          <span className="text-brand-600 dark:text-brand-300" id="brandName-show">
+            {basicInfo.brandName}
+          </span>
         </Link>
 
-        <ul className="flex gap-4 font-mono text-blue-200">
-          <Link to="#welcomeCom">
-            <li
-              className={`hidden sm:inline hover:text-blue-400 ${
-                location.hash === "#welcomeCom" ? "underline" : ""
+        {/* Desktop nav */}
+        <nav className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => (
+            <Link
+              key={link.hash}
+              to={link.hash}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition hover:bg-brand-500/10 hover:text-brand-600 dark:hover:text-brand-300 ${
+                location.hash === link.hash
+                  ? "text-brand-600 dark:text-brand-300"
+                  : "text-slate-600 dark:text-slate-300"
               }`}
             >
-              Home
-            </li>
-          </Link>
-          {!isSectionEmpty.education && (
-            <Link to="#eduCom">
-              <li
-                className={`hidden sm:inline hover:text-blue-400 ${
-                  location.hash === "#eduCom" ? "underline" : ""
-                }`}
-              >
-                Education
-              </li>
+              {link.label}
             </Link>
-          )}
-          {!isSectionEmpty.work && (
-            <Link to="#exeCom">
-              <li
-                className={`hidden sm:inline hover:text-blue-400 ${
-                  location.hash === "#exeCom" ? "underline" : ""
-                }`}
-              >
-                Experience
-              </li>
-            </Link>
-          )}
-          {!isSectionEmpty.project && (
-            <Link to="#projectCom">
-              <li
-                className={`hidden sm:inline hover:text-blue-400 ${
-                  location.hash === "#projectCom" ? "underline" : ""
-                }`}
-              >
-                Projects
-              </li>
-            </Link>
-          )}
-          {!isSectionEmpty.certificate && (
-            <Link to="#certificateCom">
-              <li
-                className={`hidden sm:inline hover:text-blue-400 ${
-                  location.hash === "#certificateCom" ? "underline" : ""
-                }`}
-              >
-                Certificate
-              </li>
-            </Link>
-          )}
-          <Link to="#contactCom">
-            <li
-              className={`hidden sm:inline hover:text-blue-400 ${
-                location.hash === "#contactCom" ? "underline" : ""
-              }`}
-            >
-              Contact
-            </li>
-          </Link>
-          {currentUser && (
-            <Link to="/edit">
-              <IoIosSettings className="text-2xl hidden sm:inline" />
-            </Link>
-          )}
-        </ul>
-        <div onClick={handleMenu} className="block md:hidden">
-          {!showMenu ? (
-            <AiOutlineClose size={30} />
-          ) : (
-            <AiOutlineMenu size={30} />
-          )}
-        </div>
+          ))}
+        </nav>
 
+        <div className="flex items-center gap-2">
+          {currentUser && (
+            <Link
+              to="/edit"
+              aria-label="Dashboard"
+              className="hidden h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-slate-600 transition hover:text-brand-600 md:inline-flex dark:border-white/15 dark:text-slate-300"
+            >
+              <IoIosSettings className="text-lg" />
+            </Link>
+          )}
+          <button
+            onClick={() => setOpen(true)}
+            aria-label="Open menu"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-slate-700 md:hidden dark:border-white/15 dark:text-slate-200"
+          >
+            <AiOutlineMenu size={20} />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile drawer */}
+      <div
+        className={`fixed inset-0 z-50 md:hidden ${
+          open ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+      >
         <div
-          className={
-            !showMenu
-              ? "fixed left-0 top-0 w-[80%] h-full border-r border-r-blue-900 bg-blue-800 ease-in-out duration-500"
-              : "fixed left-[-100%]"
-          }
+          onClick={() => setOpen(false)}
+          className={`absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 ${
+            open ? "opacity-100" : "opacity-0"
+          }`}
+        />
+        <div
+          className={`absolute right-0 top-0 h-full w-[78%] max-w-xs border-l border-slate-200 bg-white p-6 shadow-2xl transition-transform duration-300 dark:border-white/10 dark:bg-slate-900 ${
+            open ? "translate-x-0" : "translate-x-full"
+          }`}
         >
-          <Link to="/">
-            <h1 className="font-bold py-4 ml-5">
-              <span className="text-yellow-300" id="brandName-show">
-                {basicInfo.brandName}
-              </span>
-            </h1>
-          </Link>
-          <ul className="text-blue-200 pt-1 font-bold">
-            <Link to="#welcomeCom" onClick={handleClick}>
-              <li className="p-3 border-b border-blue-600">Home</li>
-            </Link>
-            {!isSectionEmpty.education && (
-              <Link to="#eduCom" onClick={handleClick}>
-                <li className="p-3 border-b border-blue-600">Education</li>
+          <div className="mb-8 flex items-center justify-between">
+            <span className="text-xl text-brand-600 dark:text-brand-300" id="brandName-show">
+              {basicInfo.brandName}
+            </span>
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Close menu"
+              className="text-slate-500 dark:text-slate-300"
+            >
+              <AiOutlineClose size={24} />
+            </button>
+          </div>
+          <ul className="flex flex-col gap-1">
+            {navLinks.map((link) => (
+              <Link key={link.hash} to={link.hash} onClick={() => setOpen(false)}>
+                <li className="rounded-xl px-4 py-3 font-medium text-slate-700 transition hover:bg-brand-500/10 hover:text-brand-600 dark:text-slate-200">
+                  {link.label}
+                </li>
               </Link>
-            )}
-            {!isSectionEmpty.work && (
-              <Link to="#exeCom" onClick={handleClick}>
-                <li className="p-3 border-b border-blue-600">Experience</li>
-              </Link>
-            )}
-            {!isSectionEmpty.project && (
-              <Link to="#projectCom" onClick={handleClick}>
-                <li className="p-3 border-b border-blue-600">Projects</li>
-              </Link>
-            )}
-            {!isSectionEmpty.certificate && (
-              <Link to="#certificateCom" onClick={handleClick}>
-                <li className="p-3 border-b border-blue-600">Certificate</li>
-              </Link>
-            )}
-            <Link to="#contactCom" onClick={handleClick}>
-              <li className="p-3 border-b border-blue-600">Contact</li>
-            </Link>
+            ))}
             {currentUser && (
-              <Link to="/edit">
-                <li className="p-3 border-b border-blue-600 text-red-500">
+              <Link to="/edit" onClick={() => setOpen(false)}>
+                <li className="mt-2 rounded-xl bg-brand-600 px-4 py-3 font-semibold text-white">
                   Edit Page
                 </li>
               </Link>

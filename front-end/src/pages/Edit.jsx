@@ -1,68 +1,38 @@
 import React from "react";
-import Sidebar from "../components/Sidebar";
-import { CiSettings } from "react-icons/ci";
-import { FaHandPointRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import AdminLayout from "../components/AdminLayout";
+import { FiUser, FiShare2, FiFolder, FiBookOpen, FiAward, FiBriefcase, FiMail, FiArrowRight } from "react-icons/fi";
+
+const cards = [
+  { to: "/basic-info", label: "Basic Info", desc: "Name, headline, photo & CV", Icon: FiUser },
+  { to: "/social-media", label: "Social Media", desc: "Your profile links", Icon: FiShare2 },
+  { to: "/projects", label: "Projects", desc: "Showcase your work", Icon: FiFolder },
+  { to: "/education", label: "Education", desc: "Schools & degrees", Icon: FiBookOpen },
+  { to: "/certificate", label: "Certificate", desc: "Certifications earned", Icon: FiAward },
+  { to: "/experience", label: "Work Experience", desc: "Roles & companies", Icon: FiBriefcase },
+  { to: "/contact", label: "Contact", desc: "How people reach you", Icon: FiMail },
+];
 
 export default function Edit() {
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* side bar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
+    <AdminLayout
+      title="Welcome back 👋"
+      subtitle="Pick a section to customize your portfolio."
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
+        {cards.map(({ to, label, desc, Icon }) => (
+          <Link key={to} to={to} className="card card-hover group flex items-center gap-4 p-5">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-300">
+              <Icon className="text-xl" />
+            </span>
+            <div className="flex-1">
+              <p className="font-display font-bold text-slate-900 dark:text-white">{label}</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{desc}</p>
+            </div>
+            <FiArrowRight className="text-slate-400 transition group-hover:translate-x-1 group-hover:text-brand-600 dark:group-hover:text-brand-300" />
+          </Link>
+        ))}
       </div>
-      {/* welcome */}
-      <div className="flex-1 flex items-center justify-center h-screen md:left-[-30%]">
-        <div className="flex flex-col items-center">
-          <CiSettings className="text-5xl mb-5 " />
-          <h1 className="font-bold font-serif">Hey..Welcome..!</h1>
-          <h1 className="mb-5">Let's Customize portfolio</h1>
-          <ul className="md:hidden sm:grid">
-            <Link to="/basic-info">
-              <li className="mt-5 flex flex-row gap-4 font-semibold items-center">
-                <FaHandPointRight className="text-xl" />
-                Basic Info
-              </li>
-            </Link>
-            <Link to="/social-media">
-              <li className="mt-5 flex flex-row gap-4 font-semibold items-center">
-                <FaHandPointRight className="text-xl" />
-                Social Media
-              </li>
-            </Link>
-            <Link to="/projects">
-              <li className="mt-5 flex flex-row gap-4 font-semibold items-center">
-                <FaHandPointRight className="text-xl" />
-                Projects
-              </li>
-            </Link>
-            <Link to="/education">
-              <li className="mt-5 flex flex-row gap-4 font-semibold items-center">
-                <FaHandPointRight className="text-xl" />
-                Education
-              </li>
-            </Link>
-            <Link to="/certificate">
-              <li className="mt-5 flex flex-row gap-4 font-semibold items-center">
-                <FaHandPointRight className="text-xl" />
-                Certificate
-              </li>
-            </Link>
-            <Link to="/experience">
-              <li className="mt-5 flex flex-row gap-4 font-semibold items-center">
-                <FaHandPointRight className="text-xl" />
-                Work Experience
-              </li>
-            </Link>
-            <Link to="/contact">
-              <li className="mt-5 flex flex-row gap-4 font-semibold items-center">
-                <FaHandPointRight className="text-xl" />
-                Contact
-              </li>
-            </Link>
-          </ul>
-        </div>
-      </div>
-    </div>
+    </AdminLayout>
   );
 }

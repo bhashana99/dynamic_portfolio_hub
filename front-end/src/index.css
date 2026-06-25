@@ -1,10 +1,100 @@
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-#brandName-show,#footerBrand{
-    font-family: 'Pacifico', cursive;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
 
+  /* Dark is the only theme. */
+  body {
+    @apply bg-ink-900 text-slate-300 antialiased;
+  }
+
+  ::selection {
+    @apply bg-brand-500/30 text-white;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-ink-700;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+}
+
+@layer components {
+  /* Brand wordmark — monospace reads engineered, not playful. */
+  #brandName-show,
+  #footerBrand {
+    @apply font-mono font-semibold tracking-tight;
+  }
+
+  /* Page section wrapper for the public site */
+  .section {
+    @apply mx-auto w-full max-w-6xl px-5 py-16 md:py-24;
+  }
+
+  /* Eyebrow above section titles — monospace + section index. */
+  .eyebrow {
+    @apply mb-4 inline-flex items-center gap-2 font-mono text-xs font-medium tracking-tight text-brand-400;
+  }
+
+  .section-title {
+    @apply font-display text-3xl font-bold tracking-tight text-white md:text-4xl;
+  }
+
+  /* Restrained accent for highlighted words (no multi-hue gradient). */
+  .gradient-text {
+    @apply text-brand-400;
+  }
+
+  /* Card surface — graphite, quiet border. */
+  .card {
+    @apply rounded-xl border border-white/10 bg-ink-800/60 shadow-card transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply hover:-translate-y-0.5 hover:border-brand-500/40;
+  }
+
+  /* Buttons — solid, restrained (no scale, no halo). */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-200 transition-colors duration-200 hover:border-brand-500/50 hover:text-white;
+  }
+
+  /* Skill / tag chip */
+  .chip {
+    @apply inline-flex items-center rounded-md border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-xs font-medium text-slate-300;
+  }
+
+  /* Admin form controls */
+  .form-label {
+    @apply mb-1.5 block text-sm font-medium text-slate-200;
+  }
+
+  .form-input {
+    @apply w-full rounded-lg border border-ink-700 bg-ink-800 px-4 py-2.5 text-slate-100 outline-none transition placeholder:text-slate-500 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/30;
+  }
+
+  /* Terminal window — the hero's signature element */
+  .terminal {
+    @apply overflow-hidden rounded-xl border border-white/10 bg-ink-800/80 font-mono text-sm shadow-card;
+  }
+
+  .caret {
+    @apply ml-0.5 inline-block w-2 -translate-y-px bg-brand-400 align-middle animate-blink;
+    height: 1.05em;
+  }
 }

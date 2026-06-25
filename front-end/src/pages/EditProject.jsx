@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
+import AdminLayout from "../components/AdminLayout";
 
 import { useParams } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom";
@@ -79,91 +79,87 @@ export default function Projects() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
-      </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold ">
-          Edit Project
-        </h1>
-
-        <div className="mt-5">
-          <form className="mt-5" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="projectName">
-                Project Name<span className="text-red-600 text-2xl">*</span>
+    <AdminLayout
+      title="Edit Project"
+      subtitle="Update the details of this project."
+    >
+      <div className="card p-6 md:p-8">
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label htmlFor="projectName" className="form-label">
+                Project Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. Portfolio"
                 id="projectName"
-                className="p-1"
+                className="form-input"
                 required
                 value={formData.projectName}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="projectDescription">Description</label>
+            <div className="md:col-span-2">
+              <label htmlFor="projectDescription" className="form-label">
+                Description
+              </label>
               <textarea
                 rows={4}
                 type="text"
                 placeholder="e.g. Portfolio"
                 id="projectDescription"
-                className="p-1"
+                className="form-input"
                 value={formData.projectDescription}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="repoUrl">GitHub repo link</label>
+            <div>
+              <label htmlFor="repoUrl" className="form-label">
+                GitHub repo link
+              </label>
               <textarea
                 rows={2}
                 type="text"
                 id="repoUrl"
-                className="p-1"
+                className="form-input"
                 value={formData.repoUrl}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="siteUrl">App / Site Link</label>
+            <div>
+              <label htmlFor="siteUrl" className="form-label">
+                App / Site Link
+              </label>
               <textarea
                 rows={2}
                 type="text"
                 id="siteUrl"
-                className="p-1"
+                className="form-input"
                 value={formData.siteUrl}
                 onChange={handleChange}
               />
             </div>
+          </div>
 
-            <div className="flex flex-row gap-2 justify-end">
-              <div>
-                <Link to="/projects">
-                  <button className="mt-5 p-3 bg-white border-black w-full text-black rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-                    Back
-                  </button>
-                </Link>
-              </div>
-
-              <div>
-                <button
-                  disabled={loading || !isFormChanged}
-                  className={`mt-5 p-3 bg-blue-700 w-full text-white rounded-lg uppercase hover:opacity-95 ${
-                    !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  {loading ? "Updating..." : "Update project"}
-                </button>
-              </div>
-              {error && <p className="text-red-700">{error}</p>}
-            </div>
-          </form>
-        </div>
+          <div className="mt-6 flex flex-row justify-end gap-3">
+            <Link to="/projects">
+              <button type="button" className="btn-secondary">
+                Back
+              </button>
+            </Link>
+            <button
+              disabled={loading || !isFormChanged}
+              className={`btn-primary ${
+                !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Updating..." : "Update project"}
+            </button>
+          </div>
+          {error && <p className="mt-4 text-sm font-medium text-red-600">{error}</p>}
+        </form>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

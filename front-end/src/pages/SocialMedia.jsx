@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import AdminLayout from "../components/AdminLayout";
 import { FaLinkedin, FaStackOverflow, FaInstagram } from "react-icons/fa";
 import { FaSquareGithub, FaSquareXTwitter, FaMedium } from "react-icons/fa6";
 import Swal from "sweetalert2";
@@ -116,244 +116,253 @@ export default function SocialMedia() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className=" fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
-      </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold mb-5  ">
-          Social Media
-        </h1>
-        <form onSubmit={handleSubmit}>
-          <div className=" flex flex-col md:flex-row gap-2">
-            <div className="flex-1">
-              <div className="  border-solid border-2 p-5 mb-5">
-                <div className="flex flex-row items-center gap-3">
-                  <h2 className="font-semibold text-xl my-5">Linkedin</h2>
-                  <FaLinkedin className="text-2xl text-blue-600" />
-                </div>
-
-                <div className="flex flex-col gap-5 ">
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="linkedin-username" className="basis-1/3">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. kasunkalhara "
-                      className="p-1 w-full"
-                      id="linkedin-username"
-                      value={formData.linkedin.username}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="linkedin-link" className="basis-1/3">
-                      Profile Url
-                    </label>
-                    <textarea
-                      className="p-1 w-full"
-                      placeholder="e.g. www.linkedin.com"
-                      id="linkedin-link"
-                      cols={2}
-                      value={formData.linkedin.link}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="flex-1  border-solid border-2 p-5 mb-5">
-                <div className="flex flex-row items-center gap-3">
-                  <h2 className="font-semibold text-xl my-5">X</h2>
-                  <FaSquareXTwitter className="text-2xl" />
-                </div>
-
-                <div className="flex flex-col gap-5 ">
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="x-username" className="basis-1/3">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. kasunkalhara "
-                      className="p-1 w-full"
-                      id="x-username"
-                      value={formData.x.username}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="xLink" className="basis-1/3">
-                      Profile Url
-                    </label>
-                    <textarea
-                      className="p-1 w-full"
-                      placeholder="e.g. www.x.com"
-                      id="x-link"
-                      cols={2}
-                      value={formData.x.link}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="flex-1  border-solid border-2 p-5 mb-5">
-                <div className="flex flex-row items-center gap-3">
-                  <h2 className="font-semibold text-xl my-5">Medium</h2>
-                  <FaMedium className="text-2xl" />
-                </div>
-
-                <div className="flex flex-col gap-5 ">
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="medium-username" className="basis-1/3">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. kasunkalhara "
-                      className="p-1 w-full"
-                      id="medium-username"
-                      value={formData.medium.username}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="medium-link" className="basis-1/3">
-                      Profile Url
-                    </label>
-                    <textarea
-                      className="p-1 w-full"
-                      placeholder="e.g. www.medium.com"
-                      id="medium-link"
-                      cols={2}
-                      value={formData.medium.link}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
+    <AdminLayout
+      title="Social Media"
+      subtitle="Connect your social profiles to your portfolio."
+    >
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Linkedin */}
+          <div className="card p-6">
+            <div className="mb-5 flex items-center gap-3">
+              <FaLinkedin className="text-2xl text-blue-600" />
+              <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                Linkedin
+              </h2>
             </div>
-            <div className="flex-1">
-              <div className="flex-1  border-solid border-2 p-5 mb-5">
-                <div className="flex flex-row items-center gap-3">
-                  <h2 className="font-semibold text-xl my-5">GitHub</h2>
-                  <FaSquareGithub className="text-2xl text-black" />
-                </div>
-
-                <div className="flex flex-col gap-5 ">
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="github-username" className="basis-1/3">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. kasunkalhara "
-                      className="p-1 w-full"
-                      id="github-username"
-                      value={formData.github.username}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="github-link" className="basis-1/3">
-                      Profile Url
-                    </label>
-                    <textarea
-                      className="p-1 w-full"
-                      placeholder="e.g. www.github.com"
-                      id="github-link"
-                      cols={2}
-                      value={formData.github.link}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>{" "}
-              <div className="flex-1  border-solid border-2 p-5 mb-5">
-                <div className="flex flex-row items-center gap-3">
-                  <h2 className="font-semibold text-xl my-5">Stack Overflow</h2>
-                  <FaStackOverflow className="text-2xl " />
-                </div>
-
-                <div className="flex flex-col gap-5 ">
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="stackOverflow-username" className="basis-1/3">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. kasunkalhara "
-                      className="p-1 w-full"
-                      id="stackOverflow-username"
-                      value={formData.stackOverflow.username}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="stackOverflow-link" className="basis-1/3">
-                      Profile Url
-                    </label>
-                    <textarea
-                      className="p-1 w-full"
-                      placeholder="e.g. www.stackoverflow.com"
-                      id="stackOverflow-link"
-                      cols={2}
-                      value={formData.stackOverflow.link}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="linkedin-username" className="form-label">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. kasunkalhara "
+                  className="form-input"
+                  id="linkedin-username"
+                  value={formData.linkedin.username}
+                  onChange={handleChange}
+                />
               </div>
-              <div className="flex-1  border-solid border-2 p-5">
-                <div className="flex flex-row items-center gap-3">
-                  <h2 className="font-semibold text-xl my-5">Instagram</h2>
-                  <FaInstagram className="text-2xl text-orange-600 " />
-                </div>
-
-                <div className="flex flex-col gap-5 ">
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="instagram-username" className="basis-1/3">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. kasunkalhara "
-                      className="p-1 w-full"
-                      id="instagram-username"
-                      value={formData.instagram.username}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center">
-                    <label htmlFor="instagram-link" className="basis-1/3">
-                      Profile Url
-                    </label>
-                    <textarea
-                      className="p-1 w-full"
-                      placeholder="e.g. www.instagram.com"
-                      id="instagram-link"
-                      cols={2}
-                      value={formData.instagram.link}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="linkedin-link" className="form-label">
+                  Profile Url
+                </label>
+                <textarea
+                  className="form-input"
+                  placeholder="e.g. www.linkedin.com"
+                  id="linkedin-link"
+                  cols={2}
+                  value={formData.linkedin.link}
+                  onChange={handleChange}
+                />
               </div>
             </div>
           </div>
-          <button
-            disabled={!isFormChanged}
-            className={`mt-5 p-3 bg-blue-700 w-full text-white rounded-lg uppercase hover:opacity-95 ${
-              !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-           {loading ? "Updating..." : "Update Social Media Info"}
-           
-          </button>
-          {error && <p className="text-red-700">{error}</p>}
-        </form>
-      </div>
-    </div>
+
+          {/* X */}
+          <div className="card p-6">
+            <div className="mb-5 flex items-center gap-3">
+              <FaSquareXTwitter className="text-2xl text-slate-900 dark:text-white" />
+              <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                X
+              </h2>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="x-username" className="form-label">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. kasunkalhara "
+                  className="form-input"
+                  id="x-username"
+                  value={formData.x.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="xLink" className="form-label">
+                  Profile Url
+                </label>
+                <textarea
+                  className="form-input"
+                  placeholder="e.g. www.x.com"
+                  id="x-link"
+                  cols={2}
+                  value={formData.x.link}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Medium */}
+          <div className="card p-6">
+            <div className="mb-5 flex items-center gap-3">
+              <FaMedium className="text-2xl text-slate-900 dark:text-white" />
+              <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                Medium
+              </h2>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="medium-username" className="form-label">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. kasunkalhara "
+                  className="form-input"
+                  id="medium-username"
+                  value={formData.medium.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="medium-link" className="form-label">
+                  Profile Url
+                </label>
+                <textarea
+                  className="form-input"
+                  placeholder="e.g. www.medium.com"
+                  id="medium-link"
+                  cols={2}
+                  value={formData.medium.link}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* GitHub */}
+          <div className="card p-6">
+            <div className="mb-5 flex items-center gap-3">
+              <FaSquareGithub className="text-2xl text-slate-900 dark:text-white" />
+              <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                GitHub
+              </h2>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="github-username" className="form-label">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. kasunkalhara "
+                  className="form-input"
+                  id="github-username"
+                  value={formData.github.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="github-link" className="form-label">
+                  Profile Url
+                </label>
+                <textarea
+                  className="form-input"
+                  placeholder="e.g. www.github.com"
+                  id="github-link"
+                  cols={2}
+                  value={formData.github.link}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Stack Overflow */}
+          <div className="card p-6">
+            <div className="mb-5 flex items-center gap-3">
+              <FaStackOverflow className="text-2xl text-orange-500" />
+              <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                Stack Overflow
+              </h2>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="stackOverflow-username" className="form-label">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. kasunkalhara "
+                  className="form-input"
+                  id="stackOverflow-username"
+                  value={formData.stackOverflow.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="stackOverflow-link" className="form-label">
+                  Profile Url
+                </label>
+                <textarea
+                  className="form-input"
+                  placeholder="e.g. www.stackoverflow.com"
+                  id="stackOverflow-link"
+                  cols={2}
+                  value={formData.stackOverflow.link}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Instagram */}
+          <div className="card p-6">
+            <div className="mb-5 flex items-center gap-3">
+              <FaInstagram className="text-2xl text-pink-600" />
+              <h2 className="font-display text-lg font-semibold text-slate-900 dark:text-white">
+                Instagram
+              </h2>
+            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="instagram-username" className="form-label">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. kasunkalhara "
+                  className="form-input"
+                  id="instagram-username"
+                  value={formData.instagram.username}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="instagram-link" className="form-label">
+                  Profile Url
+                </label>
+                <textarea
+                  className="form-input"
+                  placeholder="e.g. www.instagram.com"
+                  id="instagram-link"
+                  cols={2}
+                  value={formData.instagram.link}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          disabled={!isFormChanged}
+          className={`btn-primary mt-6 w-full ${
+            !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          {loading ? "Updating..." : "Update Social Media Info"}
+        </button>
+        {error && (
+          <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>
+        )}
+      </form>
+    </AdminLayout>
   );
 }

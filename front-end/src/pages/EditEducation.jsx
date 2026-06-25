@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
+import AdminLayout from "../components/AdminLayout";
 import { useParams } from "react-router-dom";
 import { Link ,useNavigate} from "react-router-dom";
 
@@ -73,7 +73,7 @@ export default function EditEducation() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-    
+
       })
 
       const data = await res.json();
@@ -90,79 +90,75 @@ export default function EditEducation() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
-      </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold ">
-          Edit Education
-        </h1>
-        <div className="mt-5">
-          <form className="mt-5" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="school">
-                School<span className="text-red-600 text-2xl">*</span>
+    <AdminLayout
+      title="Edit Education"
+      subtitle="Update the details of this qualification."
+    >
+      <div className="card p-6 md:p-8">
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label htmlFor="school" className="form-label">
+                School <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. University of Colombo"
                 id="school"
-                className="p-1"
+                className="form-input"
                 required
                 value={formData.school}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="degreeName">
-                Degree Name<span className="text-red-600 text-2xl">*</span>
+            <div className="md:col-span-2">
+              <label htmlFor="degreeName" className="form-label">
+                Degree Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. Software Engineering BSc (Hons) "
                 id="degreeName"
-                className="p-1"
+                className="form-input"
                 required
                 value={formData.degreeName}
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-row gap-5">
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="startDate">
-                  Start Date<span className="text-red-600 text-2xl">*</span>
-                </label>
-                <input
-                  type="month"
-                  id="startDate"
-                  className="p-1"
-                  required
-                  value={formData.startDate}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="endDate">
-                  End Date<span className="text-red-600 text-2xl">*</span>
-                </label>
-                <input
-                  type="month"
-                  id="endDate"
-                  className="p-1"
-                  required
-                  value={formData.endDate}
-                  onChange={handleChange}
-                />
-              </div>
+            <div>
+              <label htmlFor="startDate" className="form-label">
+                Start Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="month"
+                id="startDate"
+                className="form-input"
+                required
+                value={formData.startDate}
+                onChange={handleChange}
+              />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="gpa">GPA</label>
+            <div>
+              <label htmlFor="endDate" className="form-label">
+                End Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="month"
+                id="endDate"
+                className="form-input"
+                required
+                value={formData.endDate}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="gpa" className="form-label">
+                GPA
+              </label>
               <input
                 type="number"
                 id="gpa"
-                className="p-1"
+                className="form-input"
                 min="1.00"
                 max="4.00"
                 step="0.01"
@@ -170,33 +166,31 @@ export default function EditEducation() {
                 onChange={handleChange}
               />
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <label htmlFor="description">Description</label>
-              <textarea rows={4} type="text" id="description" className="p-1" value={formData.description} onChange={handleChange} />
+            <div className="md:col-span-2">
+              <label htmlFor="description" className="form-label">
+                Description
+              </label>
+              <textarea rows={4} type="text" id="description" className="form-input" value={formData.description} onChange={handleChange} />
             </div>
-            <div className="flex flex-row gap-2 justify-end">
-              <div>
-                <Link to="/education">
-                  <button className="mt-5 p-3 bg-white border-black w-full text-black rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-                    Back
-                  </button>
-                </Link>
-              </div>
-              <div>
-                <button
-                  disabled={loading || !isFormChanged}
-                  className={`mt-5 p-3 px-16 bg-blue-700 w-full text-white rounded-lg uppercase hover:opacity-95 ${
-                    !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  {loading ? "Editing..." : "Edit"}
-                </button>
-              </div>
-            </div>
-            {error && <p className="text-red-700">{error}</p>}
-          </form>
-        </div>
+          </div>
+          <div className="mt-6 flex flex-row justify-end gap-3">
+            <Link to="/education">
+              <button type="button" className="btn-secondary">
+                Back
+              </button>
+            </Link>
+            <button
+              disabled={loading || !isFormChanged}
+              className={`btn-primary ${
+                !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              {loading ? "Editing..." : "Edit"}
+            </button>
+          </div>
+          {error && <p className="mt-4 text-sm font-medium text-red-600">{error}</p>}
+        </form>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

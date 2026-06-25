@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import exImg from "../assets/experienceImg.png";
-import DotLoader from "react-spinners/DotLoader";
-import FadeIn from "./FadeIn";
+import { FaBriefcase } from "react-icons/fa";
+import Section from "./Section";
+import Reveal from "./Reveal";
 
-export default function EduComponent() {
+const fmt = (d) =>
+  new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short" });
+
+export default function ExperienceComponent() {
   const [works, setWorks] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchExperiences = async () => {
@@ -13,7 +15,6 @@ export default function EduComponent() {
         const res = await fetch("/api/work/get-works");
         const data = await res.json();
         setWorks(data);
-        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -21,64 +22,50 @@ export default function EduComponent() {
     fetchExperiences();
   }, []);
 
+  if (works.length === 0) return null;
+
   return (
-    <>
-    {works.length > 0 && (
-    <div className="flex justify-center items-center min-h-screen"  id="exeCom" >
-      <div className="w-full max-w-5xl mt-5 mx-5">
-        <h1 className="text-2xl md:text-5xl font-bold font-mono text-center underline">
-          Experience
-        </h1>
-        <div className="grid md:grid-cols-2 items-center mt-5 gap-8">
-        <FadeIn delay={0.3} direction="left" padding fullWidth>
-          <div className="flex justify-center">
-            <img src={exImg} alt="Experience" className="w-full max-w-sm" />
-          </div>
-          </FadeIn>
-          <div className="flex flex-col items-center">
-            {loading ? (
-              <DotLoader color="#000000" />
-            ) : (
-              <ul className="w-full">
-                {works.map((work) => (
-                  <li
-                    key={work._id}
-                    className="bg-blue-200 mt-5 p-3 items-center gap-4 rounded-lg"
-                  >
-                    <div className="font-sans">
-                      <p className="text-lg md:text-xl font-bold">{work.title}</p>
-                      <p className="font-medium">
-                        {work.companyName} {" - "} {work.employmentType} {" ("}
-                        {work.locationType}
-                        {")"}
-                      </p>
-                      <p>
-                        {new Date(work.startDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                        })}{" "}
-                        -{" "}
-                        {work.currentlyWorking
-                          ? "Present"
-                          : new Date(work.endDate).toLocaleDateString(
-                              "en-US",
-                              { year: "numeric", month: "long" }
-                            )}
-                      </p>
-                      <p>{work.companyLocation}</p>
-                      {work.description && (
-                        <p className="my-3 text-justify">{work.description}</p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+    <Section id="exeCom" index="02" label="experience" title="Where I've worked">
+      <div className="relative ml-3 border-l border-slate-200 dark:border-white/10">
+        {works.map((work, i) => (
+          <Reveal key={work._id} delay={i * 0.05}>
+            <div className="relative pl-8 pb-10 last:pb-0">
+              <span className="absolute -left-[9px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-brand-500 bg-white dark:bg-ink-900">
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+              </span>
+              <div className="card card-hover p-5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="font-mono text-xs text-accent-600 dark:text-accent-400">
+                    {fmt(work.startDate)} —{" "}
+                    {work.currentlyWorking ? "Present" : fmt(work.endDate)}
+                  </p>
+                  {work.locationType && (
+                    <span className="chip text-xs">{work.locationType}</span>
+                  )}
+                </div>
+                <h3 className="mt-1 flex items-center gap-2 break-words font-display text-lg font-bold text-slate-900 dark:text-white">
+                  <FaBriefcase className="shrink-0 text-brand-500" />
+                  {work.title}
+                </h3>
+                <p className="font-medium text-slate-700 dark:text-slate-300">
+                  {work.companyName}
+                  {work.employmentType ? ` · ${work.employmentType}` : ""}
+                </p>
+                {work.companyLocation && (
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {work.companyLocation}
+                  </p>
+                )}
+                {work.description && (
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    {work.description}
+                  </p>
+                )}
+              </div>
+            </div>
+          </Reveal>
+        ))}
       </div>
-    </div>
-    )}
-    </>
+    </Section>
   );
 }

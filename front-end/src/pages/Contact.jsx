@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
+import AdminLayout from "../components/AdminLayout";
 import { FaPhoneAlt, FaWhatsapp, FaEnvelope } from "react-icons/fa";
 import Swal from "sweetalert2";
 
@@ -70,7 +70,7 @@ export default function Contact() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-    
+
       });
       const data = await res.json();
       setLoading(false);
@@ -90,77 +90,70 @@ export default function Contact() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
+    <AdminLayout
+      title="Contact Information"
+      subtitle="Manage the contact details shown on your portfolio."
+    >
+      <div className="card p-6 md:p-8">
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="phone" className="form-label flex items-center gap-2">
+              <FaPhoneAlt className="text-brand-500" />
+              Phone
+            </label>
+            <input
+              onChange={handleChange}
+              type="tel"
+              id="phone"
+              className="form-input"
+              placeholder="e.g. +94769136107"
+              value={formData.phone}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email" className="form-label flex items-center gap-2">
+              <FaEnvelope className="text-brand-500" />
+              E-Mail
+            </label>
+            <input
+              onChange={handleChange}
+              type="email"
+              id="email"
+              className="form-input"
+              placeholder="e.g. example@mail.com"
+              value={formData.email}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="whatsapp" className="form-label flex items-center gap-2">
+              <FaWhatsapp className="text-emerald-500" />
+              Whatsapp
+            </label>
+            <input
+              onChange={handleChange}
+              type="tel"
+              id="whatsapp"
+              className="form-input"
+              placeholder="e.g. +7611100025"
+              value={formData.whatsapp}
+            />
+          </div>
+
+          <button
+            disabled={!isFormChanged}
+            className={`btn-primary w-full ${
+              !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+          >
+            {loading ? "Updating..." : "Update Contact Info"}
+          </button>
+          {error && (
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          )}
+        </form>
       </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold ">
-          Contact Information
-        </h1>
-        <div className="mt-5 ">
-          <form className="mt-5 " onSubmit={handleSubmit}>
-            <div className="flex flex-row items-center gap-5 ">
-              <FaPhoneAlt className="text-2xl " />
-              <div className="flex flex-col gap-2 flex-grow">
-                <label htmlFor="phone" className="font-semibold">
-                  Phone
-                </label>
-                <input
-                  onChange={handleChange}
-                  type="tel"
-                  id="phone"
-                  className="p-1"
-                  placeholder="e.g. +94769136107"
-                  value={formData.phone}
-                />
-              </div>
-            </div>
-            <div className="flex flex-row items-center gap-5 mt-5">
-              <FaEnvelope className="text-2xl " />
-              <div className="flex flex-col gap-2 flex-grow">
-                <label htmlFor="email" className="font-semibold">
-                  E-Mail
-                </label>
-                <input
-                  onChange={handleChange}
-                  type="email"
-                  id="email"
-                  className="p-1"
-                  placeholder="e.g. example@mail.com"
-                  value={formData.email}
-                />
-              </div>
-            </div>
-            <div className="flex flex-row items-center gap-5 mt-5">
-              <FaWhatsapp className="text-2xl " />
-              <div className="flex flex-col gap-2 flex-grow">
-                <label htmlFor="whatsapp" className="font-semibold">
-                  Whatsapp
-                </label>
-                <input
-                  onChange={handleChange}
-                  type="tel"
-                  id="whatsapp"
-                  className="p-1"
-                  placeholder="e.g. +7611100025"
-                  value={formData.whatsapp}
-                />
-              </div>
-            </div>
-            <button
-              disabled={!isFormChanged}
-              className={`mt-5 p-3 bg-blue-700 w-full text-white rounded-lg uppercase hover:opacity-95 ${
-                !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              {loading ? "Updating..." : "Update Contact Info"}
-            </button>
-            {error && <p className="text-red-700">{error}</p>}
-          </form>
-        </div>
-      </div>
-    </div>
+    </AdminLayout>
   );
 }

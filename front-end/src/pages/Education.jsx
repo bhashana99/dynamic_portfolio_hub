@@ -1,6 +1,6 @@
-import React, { useState,useEffect } from "react";
-import Sidebar from "../components/Sidebar";
-import { FaPlus } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import AdminLayout from "../components/AdminLayout";
+import { FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 export default function Education() {
@@ -83,7 +83,7 @@ const handleDeleteEducation = async (id) => {
       const data = await res.json();
       if (data.success === false) {
         console.log(data.message);
-        
+
       } else {
         setLoading(false)
         window.location.reload();
@@ -91,96 +91,93 @@ const handleDeleteEducation = async (id) => {
     } catch (error) {
       setError(error.message);
       setLoading(false);
-     
+
     }
 }
 
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
-      </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold ">
-          Education
-        </h1>
-        <div className="mt-5">
-          {!showForm && (
-            <div
-              onClick={toggleForm}
-              className="max-w-72 flex flex-row gap-5 border-dashed border-2 border-indigo-600 p-2  justify-center mx-auto hover:border-green-600 cursor-pointer "
-            >
-              <FaPlus className="text-2xl text-blue-600 " />
-              <h3>Add New Education</h3>
-            </div>
-          )}
-        </div>
-        {showForm && (
-          <div className="mt-5">
-            <form className="mt-5" onSubmit={handleSubmit}>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="school">
-                  School<span className="text-red-600 text-2xl">*</span>
+    <AdminLayout
+      title="Education"
+      subtitle="Document your academic journey and qualifications."
+    >
+      {!showForm && (
+        <button
+          onClick={toggleForm}
+          className="group flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-300 px-6 py-8 text-slate-500 transition hover:border-brand-400 hover:text-brand-600 dark:border-white/10 dark:text-slate-400 dark:hover:border-brand-400 dark:hover:text-brand-300"
+        >
+          <FiPlus className="text-2xl transition group-hover:scale-110" />
+          <span className="font-display text-lg font-semibold">
+            Add New Education
+          </span>
+        </button>
+      )}
+
+      {showForm && (
+        <div className="card p-6 md:p-8">
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-5 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label htmlFor="school" className="form-label">
+                  School <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. University of Colombo"
                   id="school"
-                  className="p-1"
+                  className="form-input"
                   required
                   onChange={handleChange}
                   value={formData.school}
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="degreeName">
-                  Degree Name<span className="text-red-600 text-2xl">*</span>
+              <div className="md:col-span-2">
+                <label htmlFor="degreeName" className="form-label">
+                  Degree Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. Software Engineering BSc (Hons) "
                   id="degreeName"
-                  className="p-1"
+                  className="form-input"
                   required
                   value={formData.degreeName}
                   onChange={handleChange}
                 />
               </div>
-              <div className="flex flex-row gap-5">
-                <div className="flex flex-col gap-2 mt-5">
-                  <label htmlFor="startDate">
-                    Start Date<span className="text-red-600 text-2xl">*</span>
-                  </label>
-                  <input
-                    type="month"
-                    id="startDate"
-                    className="p-1"
-                    required
-                    value={formData.startDate}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="flex flex-col gap-2 mt-5">
-                  <label htmlFor="endDate">
-                    End Date<span className="text-red-600 text-2xl">*</span>
-                  </label>
-                  <input
-                    type="month"
-                    id="endDate"
-                    className="p-1"
-                    required
-                    value={formData.endDate}
-                    onChange={handleChange}
-                  />
-                </div>
+              <div>
+                <label htmlFor="startDate" className="form-label">
+                  Start Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="month"
+                  id="startDate"
+                  className="form-input"
+                  required
+                  value={formData.startDate}
+                  onChange={handleChange}
+                />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="gpa">GPA</label>
+              <div>
+                <label htmlFor="endDate" className="form-label">
+                  End Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="month"
+                  id="endDate"
+                  className="form-input"
+                  required
+                  value={formData.endDate}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="gpa" className="form-label">
+                  GPA
+                </label>
                 <input
                   type="number"
                   id="gpa"
-                  className="p-1"
+                  className="form-input"
                   min="1.00"
                   max="4.00"
                   defaultValue={3.54}
@@ -189,71 +186,86 @@ const handleDeleteEducation = async (id) => {
                   onChange={handleChange}
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-5">
-                <label htmlFor="description">Description</label>
+              <div className="md:col-span-2">
+                <label htmlFor="description" className="form-label">
+                  Description
+                </label>
                 <textarea
                   rows={4}
                   type="text"
                   id="description"
-                  className="p-1"
+                  className="form-input"
                   value={formData.description}
                   onChange={handleChange}
                 />
               </div>
-              <div className="flex flex-row gap-2 justify-end">
-                <div>
-                  <button
-                    onClick={toggleForm}
-                    className="mt-5 p-3 bg-white border-black w-full text-black rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-                  >
-                    Back
-                  </button>
-                </div>
-                <div>
-                  <button
-                  disabled={loading}
-                  className="mt-5 p-3 bg-green-700 w-full text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-                  >
-                    {loading ? "Creating..." : "Add Education"}
-                  </button>
-                </div>
-              </div>
-              {error && <p className="text-red-700">{error}</p>}
-            </form>
-          </div>
-        )}
-        {!showForm && educations && educations.length > 0 && (
-          <div className="mt-5">
-            <h2 className="font-semibold text-xl md:ml-10">
-              Education History
-            </h2>
+            </div>
+            <div className="mt-6 flex flex-row justify-end gap-3">
+              <button
+                type="button"
+                onClick={toggleForm}
+                className="btn-secondary"
+              >
+                Back
+              </button>
+              <button disabled={loading} className="btn-primary">
+                {loading ? "Creating..." : "Add Education"}
+              </button>
+            </div>
+            {error && <p className="mt-4 text-sm font-medium text-red-600">{error}</p>}
+          </form>
+        </div>
+      )}
+
+      {!showForm && educations && educations.length > 0 && (
+        <div className="mt-10">
+          <h2 className="font-display text-xl font-bold text-slate-900 dark:text-white">
+            Education History
+          </h2>
+          <div className="mt-5 grid gap-4">
             {educations.map((education) => (
               <div
-              key={education._id}
-              className="mt-5 border rounded-lg p-3 flex justify-between items-center gap-4"
-            >
-              <div>
-              <p className="text-2xl font-bold">{education.school}</p>
-              <p className="font-semibold">{education.degreeName}</p>
-              {education.gpa && <p>GPA: <span className="text-red-400">{education.gpa}</span></p>}
-              
-              
-              <p>{new Date(education.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })} - {new Date(education.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</p>
-              <p className="my-3">{education.description}</p>
-   </div>
-              
-              <div className="flex flex-col items-center">
-                <button onClick={()=>{handleDeleteEducation(education._id)}}  className="text-red-700 uppercase">delete</button>
+                key={education._id}
+                className="card card-hover flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between"
+              >
+                <div className="min-w-0 break-words">
+                  <p className="font-display text-xl font-bold text-slate-900 dark:text-white">
+                    {education.school}
+                  </p>
+                  <p className="font-semibold text-slate-700 dark:text-slate-300">
+                    {education.degreeName}
+                  </p>
+                  {education.gpa && (
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                      GPA: <span className="font-semibold text-accent-500">{education.gpa}</span>
+                    </p>
+                  )}
+                  <p className="mt-1 font-mono text-xs text-slate-500 dark:text-slate-400">
+                    {new Date(education.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })} - {new Date(education.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
+                  </p>
+                  <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">{education.description}</p>
+                </div>
 
-              <Link to={`/edit-education/${education._id}`} >
-                <button className="text-green-700 uppercase">edit</button>
-                </Link>
+                <div className="flex shrink-0 flex-col items-stretch gap-2">
+                  <Link to={`/edit-education/${education._id}`}>
+                    <button className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-brand-500/10 px-4 py-2 text-sm font-semibold text-brand-600 transition hover:bg-brand-500/20 dark:text-brand-300">
+                      <FiEdit2 className="text-xs" /> Edit
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleDeleteEducation(education._id);
+                    }}
+                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-500/20"
+                  >
+                    <FiTrash2 className="text-xs" /> Delete
+                  </button>
+                </div>
               </div>
-            </div>
             ))}
           </div>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 }
