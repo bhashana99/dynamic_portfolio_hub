@@ -12,9 +12,10 @@ Dynamic Portfolio Hub is a fully customizable portfolio website built using the 
 
 ## Technologies Used
 
-- **Frontend**: React,  Tailwind CSS
+- **Frontend**: React (Vite), Tailwind CSS, Framer Motion
 - **Backend**: Node.js, Express.js
-- **Database**: MongoDB, Firebase
+- **Database**: MongoDB
+- **Image/File Storage**: Cloudinary
 - **Deployment**: Render.com
 
 ## Demo
@@ -47,18 +48,22 @@ You can log in to the editing panel, make changes to your portfolio in real-time
    ```bash
    cd front-end
    npm install
-5. Create a .env File in the Root Directory
-   - Open the `.env` file and add your MongoDB connection string and other environment variables.
-
-    **Add JWT_SECRET Key**:
-   - Add a `JWT_SECRET` key of your choice in the `.env` file.
-  
-6. Create a .env File in the Frontend Directory
-   - Cut & paste the `apiKey` value from `firebase.js` to your `.env` file in the frontend directory.
-   - Set the `apiKey` in the `.env` file.
-7. Open Postman & Create a New Post Request for Register User:
+5. Create a `.env` File in the Root Directory
+   - Add your MongoDB connection string and the other backend environment variables:
+     ```env
+     MONGO=your_mongodb_connection_string
+     JWT_SECRET=your_jwt_secret
+     CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+     CLOUDINARY_API_KEY=your_cloudinary_api_key
+     CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+     ```
+   - Create a free Cloudinary account at https://cloudinary.com and copy the
+     Cloud name, API Key, and API Secret from your dashboard. Image and CV
+     uploads are handled by the backend (`POST /api/upload`) and stored on
+     Cloudinary, so no frontend keys are required.
+6. Open Postman & Create a New Post Request for Register User:
    - Use Postman to send requests for user registration and any other necessary API calls.'
-8. Customize Your Portfolio
+7. Customize Your Portfolio
    - Go to the portfolio footer, click the edit page, log in, and customize your portfolio as desired.
 
 ### For More Details

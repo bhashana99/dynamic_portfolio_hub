@@ -1,16 +1,7 @@
-import React, { useRef } from "react";
-import { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import { app } from "../firebase";
-
-import { set } from "mongoose";
+import React, { useRef, useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { FiUploadCloud, FiFileText } from "react-icons/fi";
+import AdminLayout from "../components/AdminLayout";
 
 export default function BasicInfo() {
   const fileRef = useRef(null);
@@ -54,7 +45,6 @@ export default function BasicInfo() {
   const [initialFormData, setInitialFormData] = useState({});
   const [isFormChanged, setIsFormChanged] = useState(false);
 
-  // console.log(formData);
   useEffect(() => {
     const fetchBasicInfo = async () => {
       const res = await fetch("/api/basicInfo/get-basicInfo");
@@ -85,54 +75,70 @@ export default function BasicInfo() {
   }, [formData, initialFormData]);
 
   const handleUpload = (file) => {
-    const storage = getStorage(app);
-    const fileName = new Date().getTime() + file.name;
-    const storageRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const isPdf = file.type.includes("pdf");
+    if (isPdf) {
+      setCvUploadError(false);
+    } else {
+      setProfileImgUploadError(false);
+    }
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        if (file.type.includes("pdf")) {
-          setCvPerc(Math.round(progress));
+    const data = new FormData();
+    data.append("file", file);
+
+    // XMLHttpRequest is used (instead of fetch) so we can report upload progress.
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/upload");
+
+    xhr.upload.onprogress = (event) => {
+      if (!event.lengthComputable) return;
+      const progress = Math.round((event.loaded / event.total) * 100);
+      if (isPdf) {
+        setCvPerc(progress);
+      } else {
+        setProfileImgPerc(progress);
+      }
+    };
+
+    xhr.onload = () => {
+      try {
+        const res = JSON.parse(xhr.responseText);
+        if (xhr.status >= 200 && xhr.status < 300 && res.url) {
+          if (isPdf) {
+            setFormData((prev) => ({ ...prev, cvUrl: res.url }));
+            setCvPerc(100);
+          } else {
+            setFormData((prev) => ({ ...prev, profileImage: res.url }));
+            setProfileImgPerc(100);
+          }
         } else {
-          setProfileImgPerc(Math.round(progress));
+          throw new Error(res.message || "Upload failed");
         }
-      },
-      (error) => {
-        if (file.type.includes("pdf")) {
+      } catch (error) {
+        if (isPdf) {
           setCvUploadError(true);
         } else {
           setProfileImgUploadError(true);
         }
         console.error("Upload error:", error);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref)
-          .then((downloadURL) => {
-            if (file.type.includes("pdf")) {
-              setFormData({ ...formData, cvUrl: downloadURL });
-              setCvPerc(0);
-            } else {
-              setFormData({ ...formData, profileImage: downloadURL });
-              setProfileImgPerc(0);
-            }
-          })
-          .catch((error) => {
-            if (file.type.includes("pdf")) {
-              setCvUploadError(true);
-            } else {
-              setProfileImgUploadError(true);
-            }
-            console.error("Download URL error:", error);
-          });
       }
-    );
+    };
+
+    xhr.onerror = () => {
+      if (isPdf) {
+        setCvUploadError(true);
+      } else {
+        setProfileImgUploadError(true);
+      }
+      console.error("Upload error: network error");
+    };
+
+    xhr.send(data);
   };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -140,9 +146,7 @@ export default function BasicInfo() {
     try {
       const res = await fetch(`/api/basicInfo/update-basicInfo/${id}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
@@ -151,242 +155,131 @@ export default function BasicInfo() {
       if (data.success === false) {
         setError(data.message);
       }
-      await Toast.fire({
-        icon: "success",
-        title: "Updated Successfully!",
-      });
+      await Toast.fire({ icon: "success", title: "Updated Successfully!" });
       window.location.reload();
     } catch (error) {
       setError(error.message);
       setLoading(false);
     }
   };
+
+  const uploadStatus = (err, perc, noun) => {
+    if (err) return <span className="text-red-500">Upload failed (max 20 MB)</span>;
+    if (perc > 0 && perc < 100)
+      return <span className="text-slate-500 dark:text-slate-400">Uploading {perc}%…</span>;
+    if (perc === 100)
+      return <span className="text-accent-600 dark:text-accent-400">{noun} uploaded ✓</span>;
+    return null;
+  };
+
   return (
-    <div className="flex flex-col md:flex-row gap-3 bg-gray-300 min-h-screen">
-      {/* sidebar */}
-      <div className="fixed top-0 left-0 h-full w-auto">
-        <Sidebar />
-      </div>
-      <div className="p-5 flex-1 md:ml-52">
-        <h1 className="text-center justify-center text-xl md:text-3xl font-bold ">
-          Basic Info
-        </h1>
-        <form onSubmit={handleSubmit}>
-          <div className="flex flex-col md:flex-row md:gap-5 ">
-            <div className="flex-1">
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="firstName">
-                  First Name <span className="text-red-600 text-2xl">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Kasun "
-                  className="p-1 w-full"
-                  id="firstName"
-                  required
-                  onChange={handleChange}
-                  value={formData.firstName}
-                />
-              </div>
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="lastName">
-                  Last Name <span className="text-red-600 text-2xl">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Kalhara"
-                  className="p-1 w-full"
-                  id="lastName"
-                  required
-                  onChange={handleChange}
-                  value={formData.lastName}
-                />
-              </div>
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="additionalName">Additional name</label>
-                <input
-                  type="text"
-                  placeholder=""
-                  className="p-1 w-full"
-                  id="additionalName"
-                  onChange={handleChange}
-                  value={formData.additionalName}
-                />
-              </div>
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="brandName">
-                  Brand Name <span className="text-red-600 text-2xl">*</span>{" "}
-                  (This will show top of Header)
-                </label>
-                <input
-                  type="text"
-                  className="p-1 w-full"
-                  id="brandName"
-                  required
-                  onChange={handleChange}
-                  value={formData.brandName}
-                />
-              </div>
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="headline">
-                  Headline <span className="text-red-600 text-2xl">*</span>
-                </label>
-                <textarea
-                  type="text"
-                  placeholder="e.g. Software Engineer | Web Developer | UI/UX Designer"
-                  className="p-1 w-full"
-                  id="headline"
-                  required
-                  onChange={handleChange}
-                  value={formData.headline}
-                />
-              </div>
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="about">
-                  About <span className="text-red-600 text-2xl">*</span>
-                </label>
-                <textarea
-                  type="text"
-                  placeholder="e.g. I am a software engineer who loves to code and learn new technologies."
-                  className="p-3  w-full"
-                  id="about"
-                  rows={3}
-                  required
-                  onChange={handleChange}
-                  value={formData.about}
-                />
-              </div>
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="skills">
-                  Skills <span className=" text-sm font-bold">{" add your all skills here  "}</span>
-                </label>
-                <textarea
-                  type="text"
-                  placeholder="e.g. React,Node,Express,Java,Python,UI/UX Designing,etc.."
-                  className="p-3  w-full"
-                  id="skills"
-                  rows={2}
-              
-                  onChange={handleChange}
-                  value={formData.skills}
-                />
-              </div>
-            </div>
-            <div className="flex-1">
-              
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="country">
-                  Country/Region<span className="text-red-600 text-2xl">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Sri Lanka"
-                  className="p-1 w-full"
-                  id="country"
-                  required
-                  onChange={handleChange}
-                  value={formData.country}
-                />
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <label htmlFor="cvUrl">Upload your CV</label>
-
-                <input
-                  onChange={(e) => setCvFile(e.target.files[0])}
-                  type="file"
-                  accept="application/pdf"
-                  className="p-1 "
-                  id="cvUrl"
-                />
-
-                <p className="text-sm self-center">
-                  {cvUploadError ? (
-                    <span className="text-red-700">
-                      Error PDF Upload (image must be less than 20 MB)
-                    </span>
-                  ) : cvPerc > 0 && cvPerc < 100 ? (
-                    <span className="text-black">Uploading {cvPerc}%</span>
-                  ) : cvPerc === 100 ? (
-                    <span className="text-green-700">
-                      Cv successfully uploaded!
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </p>
-              </div>
-              {formData.cvUrl && (
-                <div className="my-5">
-                  <a
-                    href={formData.cvUrl}
-                    target="_blank"
-                    className="bg-green-800 px-4 py-2 text-white rounded-md "
-                  >
-                    View CV
-                  </a>
-                </div>
-              )}
-
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="city">City</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Colombo"
-                  className="p-1 w-full mb-3"
-                  id="city"
-                  onChange={handleChange}
-                  value={formData.city}
-                />
-              </div>
-              <div className="flex flex-col gap-2 items-start my-2">
-                <label htmlFor="profileImage">
-                  Profile Image<span className="text-red-600 text-2xl">*</span>
-                </label>
-
-                <input
-                  onChange={(e) => setProfileImg(e.target.files[0])}
-                  type="file"
-                  accept="image/.*"
-                  className="p-1 "
-                  id="profileImage"
-                  ref={fileRef}
-                  hidden
-                />
-                <img
-                  onClick={() => fileRef.current.click()}
-                  src={formData.profileImage}
-                  alt="profile-Image"
-                  className="rounded-full w-32 h-32 object-cover cursor-pointer self-center"
-                />
-                <p className="text-sm self-center">
-                  {profileImgUploadError ? (
-                    <span className="text-red-700">
-                      Error Image Upload (image must be less than 20 MB)
-                    </span>
-                  ) : profileImgPerc > 0 && profileImgPerc < 100 ? (
-                    <span className="text-black">Uploading {profileImgPerc}%</span>
-                  ) : profileImgPerc === 100 ? (
-                    <span className="text-green-700">
-                      Image successfully uploaded!
-                    </span>
-                  ) : (
-                    ""
-                  )}
-                </p>
-                <button
-                  disabled={!isFormChanged}
-                  className={`mt-5 p-3 bg-blue-700 w-full text-white rounded-lg uppercase hover:opacity-95 ${
-                    !isFormChanged ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                >
-                  {loading ? "Updating..." : "Update Basic Info"}
-                </button>
-              </div>
-              {error && <p className="text-red-700">{error}</p>}
-            </div>
+    <AdminLayout title="Basic Info" subtitle="Your identity, headline, photo and CV.">
+      <form onSubmit={handleSubmit} className="card p-6 md:p-8">
+        {/* Profile image */}
+        <div className="mb-8 flex flex-col items-center gap-3">
+          <input
+            onChange={(e) => setProfileImg(e.target.files[0])}
+            type="file"
+            accept="image/*"
+            id="profileImage"
+            ref={fileRef}
+            hidden
+          />
+          <div className="group relative">
+            <img
+              onClick={() => fileRef.current.click()}
+              src={formData.profileImage}
+              alt="Profile"
+              className="h-28 w-28 cursor-pointer rounded-full border-4 border-white object-cover shadow-card dark:border-ink-700"
+            />
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-slate-900/50 text-white opacity-0 transition group-hover:opacity-100">
+              <FiUploadCloud className="text-xl" />
+            </span>
           </div>
-        </form>
-      </div>
-    </div>
+          <p className="text-xs">{uploadStatus(profileImgUploadError, profileImgPerc, "Image")}</p>
+          <p className="text-xs text-slate-400">Click the photo to change it</p>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2">
+          <div>
+            <label htmlFor="firstName" className="form-label">
+              First Name <span className="text-red-500">*</span>
+            </label>
+            <input type="text" placeholder="e.g. Kasun" className="form-input" id="firstName" required onChange={handleChange} value={formData.firstName} />
+          </div>
+          <div>
+            <label htmlFor="lastName" className="form-label">
+              Last Name <span className="text-red-500">*</span>
+            </label>
+            <input type="text" placeholder="e.g. Kalhara" className="form-input" id="lastName" required onChange={handleChange} value={formData.lastName} />
+          </div>
+          <div>
+            <label htmlFor="additionalName" className="form-label">Additional Name</label>
+            <input type="text" className="form-input" id="additionalName" onChange={handleChange} value={formData.additionalName} />
+          </div>
+          <div>
+            <label htmlFor="brandName" className="form-label">
+              Brand Name <span className="text-red-500">*</span>
+            </label>
+            <input type="text" placeholder="Shown in the header" className="form-input" id="brandName" required onChange={handleChange} value={formData.brandName} />
+          </div>
+          <div className="md:col-span-2">
+            <label htmlFor="headline" className="form-label">
+              Headline <span className="text-red-500">*</span>
+            </label>
+            <textarea placeholder="e.g. Software Engineer | Web Developer | UI/UX Designer" className="form-input" id="headline" rows={2} required onChange={handleChange} value={formData.headline} />
+          </div>
+          <div className="md:col-span-2">
+            <label htmlFor="about" className="form-label">
+              About <span className="text-red-500">*</span>
+            </label>
+            <textarea placeholder="A short intro about you." className="form-input" id="about" rows={4} required onChange={handleChange} value={formData.about} />
+          </div>
+          <div className="md:col-span-2">
+            <label htmlFor="skills" className="form-label">
+              Skills <span className="text-xs font-normal text-slate-400">(comma-separated)</span>
+            </label>
+            <textarea placeholder="e.g. React, Node, Express, Python, UI/UX" className="form-input" id="skills" rows={2} onChange={handleChange} value={formData.skills} />
+          </div>
+          <div>
+            <label htmlFor="country" className="form-label">
+              Country / Region <span className="text-red-500">*</span>
+            </label>
+            <input type="text" placeholder="e.g. Sri Lanka" className="form-input" id="country" required onChange={handleChange} value={formData.country} />
+          </div>
+          <div>
+            <label htmlFor="city" className="form-label">City</label>
+            <input type="text" placeholder="e.g. Colombo" className="form-input" id="city" onChange={handleChange} value={formData.city} />
+          </div>
+        </div>
+
+        {/* CV upload */}
+        <div className="mt-6 rounded-xl border border-dashed border-slate-300 p-4 dark:border-ink-700">
+          <div className="flex flex-wrap items-center gap-3">
+            <label htmlFor="cvUrl" className="form-label mb-0 flex items-center gap-2">
+              <FiFileText className="text-brand-500" /> Upload your CV (PDF)
+            </label>
+            <input onChange={(e) => setCvFile(e.target.files[0])} type="file" accept="application/pdf" id="cvUrl" className="text-sm text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-500/10 file:px-3 file:py-1.5 file:text-brand-600 dark:file:text-brand-300" />
+            <span className="text-xs">{uploadStatus(cvUploadError, cvPerc, "CV")}</span>
+          </div>
+          {formData.cvUrl && (
+            <a href={formData.cvUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex font-mono text-sm text-brand-600 hover:underline dark:text-brand-300">
+              View current CV →
+            </a>
+          )}
+        </div>
+
+        {error && (
+          <p className="mt-4 rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-600 dark:text-red-400">{error}</p>
+        )}
+
+        <button
+          disabled={!isFormChanged}
+          className="btn-primary mt-6 w-full disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading ? "Updating…" : "Update Basic Info"}
+        </button>
+      </form>
+    </AdminLayout>
   );
 }

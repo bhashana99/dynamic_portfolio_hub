@@ -9,6 +9,7 @@ import projectRouter from "./routes/project.route.js";
 import educationRouter from "./routes/education.route.js";
 import certificateRouter from "./routes/certificate.route.js";
 import workRouter from "./routes/work.route.js";
+import uploadRouter from "./routes/upload.route.js";
 import path from "path";
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.use("/api/project", projectRouter);
 app.use("/api/education", educationRouter);
 app.use("/api/certificate", certificateRouter);
 app.use("/api/work", workRouter);
+app.use("/api/upload", uploadRouter);
 
 app.use(express.static(path.join(__dirname, "/front-end/dist")));
 
