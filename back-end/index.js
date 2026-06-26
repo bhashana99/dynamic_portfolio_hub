@@ -10,6 +10,7 @@ import educationRouter from "./routes/education.route.js";
 import certificateRouter from "./routes/certificate.route.js";
 import workRouter from "./routes/work.route.js";
 import uploadRouter from "./routes/upload.route.js";
+import cookieParser from "cookie-parser";
 import path from "path";
 
 dotenv.config();
@@ -28,6 +29,7 @@ const __dirname = path.resolve();
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

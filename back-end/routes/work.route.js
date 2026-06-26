@@ -7,14 +7,15 @@ import {
   updateWork,
   isWorkTableEmpty,
 } from "../controllers/work.controller.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
-router.post("/create-work", createWork);
+router.post("/create-work", verifyToken, createWork);
 router.get("/get-works", getWorks);
-router.delete("/delete-work/:id", deleteWork);
+router.delete("/delete-work/:id", verifyToken, deleteWork);
 router.get("/get-work/:id", getWork);
-router.post("/update-work/:id", updateWork);
+router.post("/update-work/:id", verifyToken, updateWork);
 router.get('/is-empty', isWorkTableEmpty);
 
 export default router;
