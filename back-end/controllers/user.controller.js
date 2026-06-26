@@ -29,8 +29,11 @@ export const signIn = async (req, res, next) => {
     const { password: pass, ...rest } = validUser._doc;
 
     res
+      // Same-origin via the Vercel proxy, so SameSite=Lax works in prod and dev.
+      // If prod login ever fails, switch to { secure: true, sameSite: "none" }.
       .cookie("access_token", token, {
         httpOnly: true,
+        sameSite: "lax",
       })
       .status(200)
       .json(rest);
