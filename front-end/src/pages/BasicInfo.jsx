@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { FiUploadCloud, FiFileText } from "react-icons/fi";
 import AdminLayout from "../components/AdminLayout";
+import { cloudinaryThumb } from "../utils/cloudinary";
 
 export default function BasicInfo() {
   const fileRef = useRef(null);
@@ -188,7 +189,7 @@ export default function BasicInfo() {
           <div className="group relative">
             <img
               onClick={() => fileRef.current.click()}
-              src={formData.profileImage}
+              src={cloudinaryThumb(formData.profileImage, 224)}
               alt="Profile"
               className="h-28 w-28 cursor-pointer rounded-full border-4 border-white object-cover shadow-card dark:border-ink-700"
             />
