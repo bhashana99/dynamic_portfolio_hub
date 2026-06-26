@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { FaLinkedin, FaGithubSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter, FaMedium, FaStackOverflow } from "react-icons/fa6";
 import { FiDownload } from "react-icons/fi";
-import PropagateLoader from "react-spinners/PropagateLoader";
 
 export default function Welcome() {
   const [basicInfo, setBasicInfo] = useState({});
@@ -22,15 +21,22 @@ export default function Welcome() {
       }
     };
 
-    const fetchBasicInfo = async () => {
+    // The Render backend sleeps when idle; the first request can take a while
+    // and may return a transient error while it boots. Retry so the skeleton
+    // reliably resolves to real content instead of hanging.
+    const fetchBasicInfo = async (attempt = 0) => {
       try {
         const res = await fetch("/api/basicInfo/get-basicInfo");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         setBasicInfo(data);
         fetchSocialMedia();
         setLoading(false);
       } catch (error) {
         console.log(error);
+        if (attempt < 6) {
+          setTimeout(() => fetchBasicInfo(attempt + 1), 5000);
+        }
       }
     };
 
@@ -68,12 +74,48 @@ export default function Welcome() {
   ];
 
   if (loading) {
+    // Skeleton that mirrors the real hero layout, so nothing shifts when the
+    // content arrives. Shown while the (possibly cold) backend responds.
     return (
       <section
         id="welcomeCom"
-        className="flex min-h-screen items-center justify-center"
+        className="relative flex min-h-screen items-center overflow-hidden pt-28 pb-16 md:pt-24"
       >
-        <PropagateLoader color="#3b82f6" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:46px_46px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_78%)]" />
+
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 lg:grid-cols-[1.05fr_0.95fr]">
+          {/* Left: pitch skeleton */}
+          <div>
+            <div className="skeleton mb-6 h-24 w-24 rounded-full sm:h-28 sm:w-28 lg:hidden" />
+            <div className="skeleton h-12 w-3/4 sm:h-14 md:h-16" />
+            <div className="skeleton mt-4 h-5 w-1/2" />
+            <div className="mt-5 max-w-xl space-y-2">
+              <div className="skeleton h-4 w-full" />
+              <div className="skeleton h-4 w-11/12" />
+              <div className="skeleton h-4 w-4/5" />
+            </div>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {[16, 12, 20, 14, 18].map((w, i) => (
+                <div key={i} className="skeleton h-7" style={{ width: `${w * 4}px` }} />
+              ))}
+            </div>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="skeleton h-11 w-32 rounded-lg" />
+              <div className="skeleton h-11 w-28 rounded-lg" />
+            </div>
+            <div className="mt-8 flex items-center gap-4">
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="skeleton h-7 w-7 rounded-md" />
+              ))}
+            </div>
+          </div>
+
+          {/* Right: avatar + panel skeleton (desktop) */}
+          <div className="hidden flex-col items-center gap-6 lg:flex">
+            <div className="skeleton h-36 w-36 rounded-full md:h-44 md:w-44" />
+            <div className="skeleton h-52 w-full max-w-md rounded-xl" />
+          </div>
+        </div>
       </section>
     );
   }

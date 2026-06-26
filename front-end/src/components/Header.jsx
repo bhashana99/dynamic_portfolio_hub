@@ -15,6 +15,9 @@ export default function Header() {
     education: true,
     work: true,
   });
+  // Hold the nav back until we know which sections exist, so the menu doesn't
+  // flash a partial "Home / Contact" state and then pop in the rest.
+  const [navReady, setNavReady] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -28,19 +31,20 @@ export default function Header() {
       }
     };
 
-    const checkIfSectionsEmpty = async () => {
+    // Retry while the backend is waking up so the nav reliably appears.
+    const checkIfSectionsEmpty = async (attempt = 0) => {
       try {
-        const [certRes, projRes, eduRes, workRes] = await Promise.all([
+        const responses = await Promise.all([
           fetch("/api/certificate/is-empty"),
           fetch("/api/project/is-empty"),
           fetch("/api/education/is-empty"),
           fetch("/api/work/is-empty"),
         ]);
+        if (responses.some((r) => !r.ok)) throw new Error("section check failed");
 
-        const certData = await certRes.json();
-        const projData = await projRes.json();
-        const eduData = await eduRes.json();
-        const workData = await workRes.json();
+        const [certData, projData, eduData, workData] = await Promise.all(
+          responses.map((r) => r.json())
+        );
 
         setIsSectionEmpty({
           certificate: certData.isEmpty,
@@ -48,8 +52,12 @@ export default function Header() {
           education: eduData.isEmpty,
           work: workData.isEmpty,
         });
+        setNavReady(true);
       } catch (error) {
         console.log(error);
+        if (attempt < 6) {
+          setTimeout(() => checkIfSectionsEmpty(attempt + 1), 5000);
+        }
       }
     };
 
@@ -98,9 +106,10 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
+        {/* Desktop nav — hidden until we know the real section list */}
         <nav className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
+          {navReady &&
+            navLinks.map((link) => (
             <Link
               key={link.hash}
               to={link.hash}
@@ -125,13 +134,15 @@ export default function Header() {
               <IoIosSettings className="text-lg" />
             </Link>
           )}
-          <button
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-slate-700 md:hidden dark:border-white/15 dark:text-slate-200"
-          >
-            <AiOutlineMenu size={20} />
-          </button>
+          {navReady && (
+            <button
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-300 text-slate-700 md:hidden dark:border-white/15 dark:text-slate-200"
+            >
+              <AiOutlineMenu size={20} />
+            </button>
+          )}
         </div>
       </div>
 
