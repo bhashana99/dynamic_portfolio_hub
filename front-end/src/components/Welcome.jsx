@@ -1,47 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaLinkedin, FaGithubSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter, FaMedium, FaStackOverflow } from "react-icons/fa6";
 import { FiDownload } from "react-icons/fi";
+import { useData } from "../context/DataContext";
+import { cloudinaryThumb } from "../utils/cloudinary";
 
 export default function Welcome() {
-  const [basicInfo, setBasicInfo] = useState({});
-  const [socialMedia, setSocialMedia] = useState({});
-  const [loading, setLoading] = useState(true);
+  const { basicInfo, socialMedia, loading } = useData();
   const [isExpanded, setIsExpanded] = useState(false);
-
-  useEffect(() => {
-    const fetchSocialMedia = async () => {
-      try {
-        const res = await fetch("/api/socialMedia/get-socialMedia");
-        const data = await res.json();
-        setSocialMedia(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    // The Render backend sleeps when idle; the first request can take a while
-    // and may return a transient error while it boots. Retry so the skeleton
-    // reliably resolves to real content instead of hanging.
-    const fetchBasicInfo = async (attempt = 0) => {
-      try {
-        const res = await fetch("/api/basicInfo/get-basicInfo");
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        setBasicInfo(data);
-        fetchSocialMedia();
-        setLoading(false);
-      } catch (error) {
-        console.log(error);
-        if (attempt < 6) {
-          setTimeout(() => fetchBasicInfo(attempt + 1), 5000);
-        }
-      }
-    };
-
-    fetchBasicInfo();
-  }, []);
 
   const skillsArray = basicInfo.skills
     ? basicInfo.skills.split(",").map((s) => s.trim()).filter(Boolean)
@@ -140,7 +107,7 @@ export default function Welcome() {
           <div className="relative mb-6 w-fit lg:hidden">
             <div className="absolute -inset-2 rounded-full bg-brand-500/20 blur-2xl" />
             <img
-              src={basicInfo.profileImage}
+              src={cloudinaryThumb(basicInfo.profileImage, 224)}
               alt={fullName || "Profile"}
               className="relative h-24 w-24 rounded-full border border-white/10 object-cover sm:h-28 sm:w-28"
             />
@@ -236,7 +203,7 @@ export default function Welcome() {
           <div className="relative hidden lg:block">
             <div className="absolute -inset-2 rounded-full bg-brand-500/20 blur-2xl" />
             <img
-              src={basicInfo.profileImage}
+              src={cloudinaryThumb(basicInfo.profileImage, 352)}
               alt={fullName || "Profile"}
               className="relative h-36 w-36 rounded-full border border-white/10 object-cover md:h-44 md:w-44"
             />

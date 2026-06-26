@@ -4,28 +4,18 @@ import { FaLinkedin, FaGithubSquare, FaInstagram } from "react-icons/fa";
 import { FaSquareXTwitter, FaMedium, FaStackOverflow } from "react-icons/fa6";
 import Section from "./Section";
 import Reveal from "./Reveal";
+import { useData } from "../context/DataContext";
 
 export default function ContactComponent() {
+  const { socialMedia } = useData();
   const [contact, setContact] = useState({});
-  const [socialMedia, setSocialMedia] = useState({});
 
   useEffect(() => {
-    const fetchSocialMedia = async () => {
-      try {
-        const res = await fetch("/api/socialMedia/get-socialMedia");
-        const data = await res.json();
-        setSocialMedia(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     const fetchContact = async () => {
       try {
         const res = await fetch("/api/contactInfo/get-contactInfo");
         const data = await res.json();
         setContact(data);
-        fetchSocialMedia();
       } catch (error) {
         console.log(error);
       }

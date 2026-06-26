@@ -1,23 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useData } from "../context/DataContext";
 
 export default function Footer() {
   const { currentUser } = useSelector((state) => state.user);
-  const [basicInfo, setBasicInfo] = useState({});
-
-  useEffect(() => {
-    const fetchBasicInfo = async () => {
-      try {
-        const res = await fetch("/api/basicInfo/get-basicInfo");
-        const data = await res.json();
-        setBasicInfo(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchBasicInfo();
-  }, []);
+  const { basicInfo } = useData();
 
   return (
     <footer className="border-t border-slate-200 dark:border-white/10">

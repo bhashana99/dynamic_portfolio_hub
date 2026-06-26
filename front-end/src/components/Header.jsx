@@ -3,10 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { useSelector } from "react-redux";
 import { IoIosSettings } from "react-icons/io";
+import { useData } from "../context/DataContext";
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
-  const [basicInfo, setBasicInfo] = useState({});
+  const { basicInfo } = useData();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isSectionEmpty, setIsSectionEmpty] = useState({
@@ -21,16 +22,6 @@ export default function Header() {
   const location = useLocation();
 
   useEffect(() => {
-    const fetchBasicInfo = async () => {
-      try {
-        const res = await fetch("/api/basicInfo/get-basicInfo");
-        const data = await res.json();
-        setBasicInfo(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     // Retry while the backend is waking up so the nav reliably appears.
     const checkIfSectionsEmpty = async (attempt = 0) => {
       try {
@@ -61,7 +52,6 @@ export default function Header() {
       }
     };
 
-    fetchBasicInfo();
     checkIfSectionsEmpty();
   }, []);
 
