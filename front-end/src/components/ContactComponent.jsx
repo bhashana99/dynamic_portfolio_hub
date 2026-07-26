@@ -60,7 +60,7 @@ export default function ContactComponent() {
             <div>
               <p className="text-lg text-slate-600 dark:text-slate-300">
                 Have a role, a project, or just want to say hi? My inbox is
-                always open — I'll get back to you.
+                always open - I'll get back to you.
               </p>
               {contact.email && (
                 <a href={`mailto:${contact.email}`} className="btn-primary mt-6">
