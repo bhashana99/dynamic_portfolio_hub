@@ -1,19 +1,1 @@
-name: Keep Render backend warm
 
-# The Render free tier sleeps after ~15 min idle, making the first visit slow.
-# This pings the API on a schedule so the service stays awake.
-
-on:
-  schedule:
-    - cron: "*/10 * * * *" # every 10 minutes (external pinger is the primary keep-warm)
-  workflow_dispatch: # allow manual runs
-
-jobs:
-  ping:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ping backend
-        run: |
-          curl -sS --max-time 90 \
-            https://bhashana99.onrender.com/api/basicInfo/get-basicInfo \
-            -o /dev/null -w "HTTP %{http_code} in %{time_total}s\n"
